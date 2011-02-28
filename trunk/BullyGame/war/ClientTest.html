@@ -5,10 +5,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script type="text/javascript" src="js/ClientActions.js"></script>
     <script type="text/javascript" src="js/mootools-core-1.3.1-full-compat.js"></script>
-    
   </head>
-  <body>
+  <body onload="getGameInfo()">
       <div id="body">
+      	  
+          <p>Click here to draw a card and roll the dice<p>
+          <button onclick='useCard(5)'>Click!</button>
+          <br/>
+          <img alt="new card" src="#" id="NewCard" />
+          <div id="dice">
+          	<p>Dice</p>
+          	<div id="Dice1"> </div>
+          	<div id="Dice2"> </div>
+          </div>
+          
           <p>Enter a string in the text box to send to the servlet</p>
           <textarea id="UserInput" cols="50" rows="5"></textarea>
           <br/>
@@ -18,5 +28,7 @@
               <p>This is where the new data will go...</p>
           </div>
       </div>
+      
+      <script type="text/javascript"> setInterval("checkState()",10000); </script>
   </body>
 </html>
