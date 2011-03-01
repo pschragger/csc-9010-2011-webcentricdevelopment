@@ -1,3 +1,4 @@
+//old function...only used by the textarea to demonstrate functionality demo
 function sendData(DisplayID, DataID)
 {
     function servletCallback()
@@ -48,6 +49,7 @@ function sendData(DisplayID, DataID)
     callServlet();
 }
 
+//used to get the game info (player#, game id, turn #) and put them in cookies
 function getGameInfo()
 {
 	var GameID = Cookie.read("gameid");
@@ -91,6 +93,7 @@ function getGameInfo()
 	}
 }
 
+//checks the cookies to make sure they didn't expire
 function checkCookies()
 {
 	//if cookies not found, ask servlet for game id and player id
@@ -103,6 +106,7 @@ function checkCookies()
 	}
 }
 
+//sends request to the server to draw a card
 function getCard()
 {
     function servletCallback()
@@ -163,6 +167,7 @@ function getCard()
     callServlet();
 }
 
+//sends a request to the server to use a card
 function useCard(CardNumber)
 {
 	function servletCallback()
@@ -230,6 +235,7 @@ function useCard(CardNumber)
     callServlet();
 }
 
+//sends a request to the server to see if the game state has changed
 function checkState()
 {
 	function servletCallback()

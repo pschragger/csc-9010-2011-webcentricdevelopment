@@ -7,9 +7,18 @@ import org.json.simple.parser.*;
 
 public class GameServlet  extends HttpServlet
 {
-
+	int MinRoll = 1;
+	int MaxRoll = 6;
+	
 	private static final long serialVersionUID = 1L;
 	JSONParser parser = new JSONParser();
+	
+	private String rollDie()
+	{
+		Integer randomInt = MinRoll + (int)(Math.random() * ((MaxRoll - MinRoll) + 1));
+		
+		return randomInt.toString();
+	}
 	
 	private JSONObject parseJSON(String jsonContent)
 	{
@@ -47,8 +56,8 @@ public class GameServlet  extends HttpServlet
 	private String getCard(String jsonContent)
 	{
 		String CardURL = "http://127.0.0.1:8888/images/cards/card1.png";
-		String DiceRoll1 = "3";
-		String DiceRoll2 = "5";
+		String DiceRoll1 = rollDie();
+		String DiceRoll2 = rollDie();
 		JSONObject response = new JSONObject();
 		
 		response.put("CardURL", CardURL);
