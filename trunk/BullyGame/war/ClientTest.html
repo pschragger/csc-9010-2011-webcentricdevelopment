@@ -8,24 +8,29 @@
   </head>
   <body onload="getGameInfo()">
       <div id="body">
-      	  
-          <p>Click here to draw a card and roll the dice<p>
-          <button onclick='useCard(5)'>Click!</button>
-          <br/>
-          <img alt="new card" src="#" id="NewCard" />
-          <div id="dice">
-          	<p>Dice</p>
-          	<div id="Dice1"> </div>
-          	<div id="Dice2"> </div>
+      	  <div border="1">
+	          <p>Click here to draw a card and roll the dice<p>
+	          <button onclick='getCard()'>Click!</button>
+	          <br/>
+	          <img alt="new card" src="#" id="NewCard" />
+	          <div id="dice">
+	          	<p>Dice Rolls:</p>
+	          	<div id="Dice1"> </div>
+	          	<div id="Dice2"> </div>
+	          </div>
           </div>
           
-          <p>Enter a string in the text box to send to the servlet</p>
-          <textarea id="UserInput" cols="50" rows="5"></textarea>
-          <br/>
-          <button onclick='sendData("ContentDiv","UserInput")'>Click to send data</button>
-          <br/>
-          <div id="ContentDiv">
-              <p>This is where the new data will go...</p>
+          <hr/>
+          
+          <div border="1">
+	          <p>Enter a string in the text box to send to the servlet</p>
+	          <textarea id="UserInput" cols="50" rows="5"></textarea>
+	          <br/>
+	          <button onclick='sendData("ContentDiv","UserInput")'>Click to send data</button>
+	          <br/>
+	          <div id="ContentDiv">
+	              <p>This is where the new data will go...</p>
+	          </div>
           </div>
       </div>
       
