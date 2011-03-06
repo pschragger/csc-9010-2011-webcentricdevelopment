@@ -14,7 +14,11 @@
     <servlet-name>GameServlet</servlet-name>
     <servlet-class>edu.villanova.csc9010.bullygame.server.GameServlet</servlet-class>
   </servlet>
-  
+  <servlet>
+  	<servlet-name>Users</servlet-name>
+  	<servlet-class>edu.villanova.csc9010.bullygame.server.UsersServlet</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
     <url-pattern>/bullygame/greet</url-pattern>
@@ -24,9 +28,12 @@
     <url-pattern>/bullygame/game</url-pattern>
   </servlet-mapping>
   
-  <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>BullyGame.html</welcome-file>
+  <!-- Default page to serve --><servlet-mapping>
+  	<servlet-name>Users</servlet-name>
+  	<url-pattern>/users/*</url-pattern>
+</servlet-mapping>
+	<welcome-file-list>
+    <welcome-file>jsps/index.jsp</welcome-file>
   </welcome-file-list>
 
 </web-app>
