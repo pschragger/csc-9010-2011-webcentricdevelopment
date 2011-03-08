@@ -40,7 +40,7 @@ function setUpBoard()
           // Top row
           for(var c = 0; c < spaces; c++) 
           {
-            squares[count] = new Square(c*size, 0, size, "rgb(128,153,184)");
+            squares[count] = new Square(c*size, 0, size, "rgb(128,153,184)", ctx);
             squares[count].draw();
             count++;
           }
@@ -48,7 +48,7 @@ function setUpBoard()
           // Right column
           for(var c = 1; c < spaces-1; c++) 
           {
-            squares[count] = new Square(square_size-size, c*size, size, "rgb(128,153,184)");
+            squares[count] = new Square(square_size-size, c*size, size, "rgb(128,153,184)", ctx);
             squares[count].draw();
             count++;    
           }
@@ -56,7 +56,7 @@ function setUpBoard()
           // Bottom row
           for(var c = spaces-1; c > -1; c--) 
           {
-            squares[count] = new Square(c*size, square_size-size, size, "rgb(128,153,184)");
+            squares[count] = new Square(c*size, square_size-size, size, "rgb(128,153,184)", ctx);
             squares[count].draw();
             count++;       
           }
@@ -64,7 +64,7 @@ function setUpBoard()
           // Left column
           for(var c = spaces-2; c > 0; c--) 
           {
-            squares[count] = new Square(0, c*size, size, "rgb(128,153,184)");
+            squares[count] = new Square(0, c*size, size, "rgb(128,153,184)", ctx);
             squares[count].draw();
             count++;          
 		  }
@@ -133,17 +133,17 @@ function setUpBoard()
             // Home path
             for(var c = 1; c < mid-2; c++)
             {
-			  paths[0][rcount] = new Square(square_size-((c+1)*size), mid*size, size, "rgb(255,0,0)");
+			  paths[0][rcount] = new Square(square_size-((c+1)*size), mid*size, size, "rgb(255,0,0)", ctx);
 			  paths[0][rcount].draw();
 			  rcount++;
             }
             
             // Start area
-            paths[0][0] = new Square(square_size-(4.25*size),(mid+2)*size,size*3,"rgb(255,0,0)");
+            paths[0][0] = new Square(square_size-(4.25*size),(mid+2)*size,size*3,"rgb(255,0,0)", ctx);
             paths[0][0].draw(); 
 			
             // Pieces
-            pieces[0][0] = new Pawn(square_size-(3.5*size),(mid+2.75)*size,size*0.45,"rgb(255,0,0)",0);
+            pieces[0][0] = new Pawn(square_size-(3.5*size),(mid+2.75)*size,size*0.45,"rgb(255,0,0)",0,ctx);
             pieces[0][0].draw();
             paths[0][0].piecesInside[0] = pieces[0][0];
                                 
@@ -151,17 +151,17 @@ function setUpBoard()
             // Home path
             for(var c = 1; c < mid-2; c++)
             {
-            	paths[1][ycount] = new Square(c*size, mid*size, size, "rgb(255,255,0)");
+            	paths[1][ycount] = new Square(c*size, mid*size, size, "rgb(255,255,0)", ctx);
             	paths[1][ycount].draw();
             	ycount++;
             }
             
             // Start area
-            paths[1][0] = new Square(1.25*size,(mid-4)*size,size*3,"rgb(255,255,0)");
+            paths[1][0] = new Square(1.25*size,(mid-4)*size,size*3,"rgb(255,255,0)", ctx);
             paths[1][0].draw();
 			
             // Pieces
-            pieces[1][0] = new Pawn(2.0*size,(mid-3.25)*size,size*0.45,"rgb(255,255,0)",0);
+            pieces[1][0] = new Pawn(2.0*size,(mid-3.25)*size,size*0.45,"rgb(255,255,0)",0,ctx);
             pieces[1][0].draw();
             paths[1][0].piecesInside[0] = pieces[1][0];
             
@@ -169,17 +169,17 @@ function setUpBoard()
             // Home path
             for(var c = 1; c < mid-2; c++)
             {
-            	paths[2][gcount] = new Square(mid*size, square_size-((c+1)*size), size, "rgb(0,255,0)");
+            	paths[2][gcount] = new Square(mid*size, square_size-((c+1)*size), size, "rgb(0,255,0)", ctx);
             	paths[2][gcount].draw();
             	gcount++;
             }
             
             // Start area
-            paths[2][0] = new Square((mid-4)*size,square_size-(4.25*size),size*3,"rgb(0,255,0)");
+            paths[2][0] = new Square((mid-4)*size,square_size-(4.25*size),size*3,"rgb(0,255,0)", ctx);
             paths[2][0].draw();  
 			
             // Pieces
-            pieces[2][0] = new Pawn((mid-3.25)*size,square_size-(3.5*size),size*0.45,"rgb(0,255,0)",0);
+            pieces[2][0] = new Pawn((mid-3.25)*size,square_size-(3.5*size),size*0.45,"rgb(0,255,0)",0,ctx);
             pieces[2][0].draw();
             paths[2][0].piecesInside[0] = pieces[2][0];
 			
@@ -187,17 +187,17 @@ function setUpBoard()
             // Home path
             for(var c = 1; c < mid-2; c++)
             {
-            	paths[3][bcount] = new Square(mid*size, c*size, size, "rgb(0,0,255)");
+            	paths[3][bcount] = new Square(mid*size, c*size, size, "rgb(0,0,255)", ctx);
             	paths[3][bcount].draw();
             	bcount++;
             }
             
             // Start area
-            paths[3][0] = new Square((mid+2)*size,(1.25*size),size*3,"rgb(0,0,255)");
+            paths[3][0] = new Square((mid+2)*size,(1.25*size),size*3,"rgb(0,0,255)", ctx);
             paths[3][0].draw();
 			
             // Pieces
-            pieces[3][0] = new Pawn((mid+2.75)*size,(2*size),size*0.45,"rgb(0,0,255)",0);
+            pieces[3][0] = new Pawn((mid+2.75)*size,(2*size),size*0.45,"rgb(0,0,255)",0,ctx);
             pieces[3][0].draw();
             paths[3][0].piecesInside[0] = pieces[3][0];
 		  
@@ -212,10 +212,10 @@ function setUpBoard()
           ctx.font = "25pt Verdana";
           ctx.fillText("HOME",(mid-1.2)*size,(mid+0.9)*size); 
           
-          paths[0][rcount] = new Square((mid*size)+(size/2),(mid*size)+(size/2),size*2.5, "rgb(255,0,0)");
-          paths[1][ycount] = new Square((mid*size)-(size*2),(mid*size)-(size*2),size*2.5, "rgb(255,255,0)");
-          paths[2][gcount] = new Square((mid*size)-(size*2),(mid*size)+(size/2),size*2.5, "rgb(0,255,0)");
-          paths[3][bcount] = new Square((mid*size)+(size/2),(mid*size)-(size*2),size*2.5, "rgb(0,0,255)");
+          paths[0][rcount] = new Square((mid*size)+(size/2),(mid*size)+(size/2),size*2.5, "rgb(255,0,0)", ctx);
+          paths[1][ycount] = new Square((mid*size)-(size*2),(mid*size)-(size*2),size*2.5, "rgb(255,255,0)", ctx);
+          paths[2][gcount] = new Square((mid*size)-(size*2),(mid*size)+(size/2),size*2.5, "rgb(0,255,0)", ctx);
+          paths[3][bcount] = new Square((mid*size)+(size/2),(mid*size)-(size*2),size*2.5, "rgb(0,0,255)", ctx);
 	} // end if
 } // end draw()
       
