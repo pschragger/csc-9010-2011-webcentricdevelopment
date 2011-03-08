@@ -1,9 +1,10 @@
-function Square(x, y, size, color)
+function Square(x, y, size, color, ctx)
 {
 	this.x = x;
 	this.y = y;
 	this.size = size;
 	this.color = color;
+	this.ctx = ctx;
   
 	this.piecesInside = [4];
 	this.isFilled =
@@ -21,15 +22,10 @@ function Square(x, y, size, color)
 	this.draw = 
 		function()
 		{
-			var canvas = document.getElementById("canvas");
-			if (canvas.getContext) 
-			{
-				var ctx = canvas.getContext("2d");
-				ctx.strokeStyle = "rgb(0,0,0)";
-				ctx.fillStyle = this.color;
-				ctx.fillRect(this.x, this.y, this.size, this.size);
-				ctx.strokeRect(this.x, this.y, this.size, this.size);
-			}
+			this.ctx.fillStyle = this.color;
+			this.ctx.strokeStyle = "rgb(0,0,0)";
+			this.ctx.fillRect(this.x, this.y, this.size, this.size);
+			this.ctx.strokeRect(this.x, this.y, this.size, this.size);
 		}
   
 	this.toString =
