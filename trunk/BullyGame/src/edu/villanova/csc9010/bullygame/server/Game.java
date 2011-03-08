@@ -4,10 +4,13 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
 
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
 
 @PersistenceCapable
 public class Game {
@@ -29,6 +32,18 @@ public class Game {
 	
 	@Persistent
 	private Date endDate;
+	
+	public Game()
+	{
+		this.startDate = new Date();
+		this.currentPlayer = null;
+		this.winner = null;
+		this.endDate = null;
+		this.active = true;
+		
+	}
+	
+	//getters
 	
 	public Key getKey()
 	{
@@ -59,6 +74,8 @@ public class Game {
 	{
 		return endDate;
 	}
+	
+	//setters
 	
 	private void setStartDate(Date st)
 	{
