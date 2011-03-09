@@ -12,6 +12,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 
+
 @PersistenceCapable
 public class Game {
 	@PrimaryKey
@@ -33,6 +34,9 @@ public class Game {
 	@Persistent
 	private Date endDate;
 	
+	/**
+	 * Creates a new game with a unique key, the current date, and sets active as true. All other fields are null 
+	 */
 	public Game()
 	{
 		this.startDate = new Date();
@@ -42,6 +46,26 @@ public class Game {
 		this.active = true;
 		
 	}
+
+	/**
+	 * Create a new Game object
+	 * @param key unique identifier
+	 * @param s Date the game was started
+	 * @param cp the player who is currently making a move
+	 * @param w the winner of the game
+	 * @param ed the end date
+	 * @param a true if active, false if not
+	 */
+	public Game(Key key, Date s, User cp, User w, Date ed, boolean a)
+	{
+		this.key = key;
+		this.startDate = s;
+		this.currentPlayer = cp;
+		this.winner = w;
+		this.endDate = ed;
+		this.active = a;
+	}
+	
 	
 	//getters
 	
