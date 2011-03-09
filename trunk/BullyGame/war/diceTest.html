@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <script type="text/javascript" src="js/lib/mootools-core-1.3.js"></script>
+    <script type="text/javascript" src="js/lib/mcl-min.js"></script>
+   	<script type="text/javascript" src="js/dice.js"></script>
+   	<script type="text/javascript">   	
+   		$(window).addEvent('load',function(){
+   			var v1 = Math.ceil(Math.random()*6);
+   			var v2 = Math.ceil(Math.random()*6);
+   			var d1 = createDie('d1', v1, 100, 30, 30);
+   			var d2 = createDie('d2', v2, 300, 30, 0);
+   			drawDiceRoll(d1,d2);
+   		});
+   	</script>
+  </head>
+  <body>
+    <canvas id="diceCanvas" width="500" height="200"></canvas>
+  </body>
+</html>
