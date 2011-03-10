@@ -27,14 +27,17 @@ function createDie(dId, nVal, xPos, yPos, angle) {
 		y : yPos,
 		w : DIE_LENGTH,
 		h : DIE_LENGTH,
-		strokeStyle : 'rgba(0,0,0,0.5)',
+		fillStyle : 'rgba(255,255,255,1)',
+		strokeStyle : 'rgba(0,0,0,1)',
 		events : {
 			onDraw : function( ctx ) {
+				ctx.fillStyle = this.fillStyle;
 				ctx.strokeStyle = this.strokeStyle;
+				ctx.fillRect(this.x,this.y,this.w,this.h);
 				ctx.strokeRect(this.x,this.y,this.w,this.h);				
 				this.setDims(this.x,this.y,this.w,this.h);
-				ctx.fillStyle = 'rgb(0.455,0,0)';
-				for (var i=0;i<diceDots[this.val-1].length;i++) {
+				ctx.fillStyle = 'rgba(0,0,0,1)';
+				for (var i=0;i<diceDots[this.val-1].length;i++) {					
 					var pos = diceDots[this.val-1][i];	
 					ctx.beginPath();					
 					ctx.arc(this.x+this.w*pos.x,this.y+this.h*pos.y,DOT_RAD,0,Math.PI*2, true);
@@ -48,7 +51,7 @@ function createDie(dId, nVal, xPos, yPos, angle) {
 			onMouseout : function(x,y){
 				this.strokeStyle = 'rgba(0,0,0,0.5)';
 			},
-			onClick : function(x,y) {
+			click : function(x,y) {
 				alert("This die has a value of " + this.val + ".");
 			}
 		}
@@ -62,14 +65,14 @@ function createDie(dId, nVal, xPos, yPos, angle) {
 //	
 //}
 
-function drawDiceRoll(d1,d2) {
+function drawDiceRoll(d1,d2) {	
 	CANVAS.init({ canvasElement : 'diceCanvas' });
+	CANVAS.clear();
 //	var dCanvas = $('diceCanvas');
 //	var ctx = dCanvas.getContext('2d');
 	var layer = CANVAS.layers.add( new Layer({
 		id : 'mainLayer'
-	}));
-	
+	}));	
     layer.add(d1);
     layer.add(d2);
 	layer.draw();
