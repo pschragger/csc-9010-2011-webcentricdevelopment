@@ -7,8 +7,12 @@ import org.json.simple.parser.*;
 
 public class GameServlet  extends HttpServlet
 {
-	int MinRoll = 1;
-	int MaxRoll = 6;
+	static final int MinRoll = 1;
+	static final int MaxRoll = 6;
+	static final int MaxPlayers = 2;
+	
+	int PlayerTurn = 1;
+	int[] PlayersArray;
 	
 	private static final long serialVersionUID = 1L;
 	JSONParser parser = new JSONParser();
@@ -38,6 +42,14 @@ public class GameServlet  extends HttpServlet
 
         return jsonObj;
 	}
+	
+	private String validateTurn(String jsonContent)
+	{
+		JSONObject json = parseJSON(jsonContent);
+		
+		return "";
+	}
+	
 	
 	private String getGameInfo()
 	{

@@ -15,11 +15,11 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 /*
- * Data object that stores Game IDs and the Player ID if they are playing taht game
+ * Data object that stores Game IDs and the Player ID if they are playing that game
  */
 @PersistenceCapable
 public class GamePlayer {
-	@PrimaryKey
+	//@PrimaryKey
 	@Persistent
 	private Key game;
 	
