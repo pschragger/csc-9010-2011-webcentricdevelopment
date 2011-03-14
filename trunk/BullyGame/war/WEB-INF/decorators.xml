@@ -1,0 +1,6 @@
+<decorators>
+  <decorator name="siteLayout" page="/jsps/decorator.jsp">
+    <pattern>/jsps/*</pattern>
+    <pattern>/</pattern>
+  </decorator>
+</decorators>
