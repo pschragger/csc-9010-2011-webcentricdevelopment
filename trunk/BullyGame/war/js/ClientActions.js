@@ -36,7 +36,7 @@ function sendData(DisplayID, DataID)
       
       //create and send the http request
       var QueryString = "action=else&content=" + strJSON;
-      req.open("GET", "http://127.0.0.1:8888/bullygame/game?" + QueryString, true);
+      req.open("GET", "/bullygame/game?" + QueryString, true);
       req.send(null);
      
     }
@@ -49,8 +49,68 @@ function sendData(DisplayID, DataID)
     callServlet();
 }
 
+//function for fetching query parameters (from http://www.netlobo.com/url_query_string_javascript.html)
+function gup( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
 //used to get the game info (player#, game id, turn #) and put them in cookies
 function getGameInfo()
+{
+	function servletCallback()
+    {
+    	//make sure ready state = 4 and status = 200 (OK)
+    	if ((req.readyState==4) &&(req.status==200))
+        {
+            console.log("cookies received...");
+            
+            //decode the json and put it in an object
+            var receivedJSON = JSON.decode(req.responseText);
+            
+            //update the cookies
+            TurnNumber = Cookie.write("turnnum", receivedJSON.TurnNumber);
+        }
+    }
+    
+	function callServlet()
+    {
+	  //build the query string
+	  var GameID = Cookie.read("gameid");
+	  var PlayerID = Cookie.read("playerid");
+	  var TurnNumber = Cookie.read("turnnum");
+	  var objJSON = 
+	  {
+		  "GameID" : GameID,
+		  "PlayerID" : PlayerID,
+		  "TurnNumber" : TurnNumber
+      };
+	  var strJSON = JSON.encode(objJSON);
+	  
+      //create and send the http request
+      var QueryString = "action=GetGameInfo&content=" + strJSON;
+      req.open("GET", "/bullygame/game?" + QueryString, true);
+      req.send(null);
+     
+    }
+
+    //create a new request & set its event handler
+    req = new XMLHttpRequest();
+    req.onreadystatechange = servletCallback;
+    
+    //send the request
+    callServlet();
+}
+
+//function called when the page initially loads to join a game
+function joinGame()
 {
 	var GameID = Cookie.read("gameid");
     var PlayerID = Cookie.read("playerid");
@@ -67,18 +127,49 @@ function getGameInfo()
                 //decode the json and put it in an object
                 var receivedJSON = JSON.decode(req.responseText);
                 
-                //create the new cookies
-                GameID = Cookie.write("gameid", receivedJSON.GameID);
-                PlayerID = Cookie.write("playerid", receivedJSON.PlayerID);
-                TurnNumber = Cookie.write("turnnum", receivedJSON.TurnNumber);
+                if(!receivedJSON.Status)
+            	{
+		            //create the new cookies
+		            GameID = Cookie.write("gameid", receivedJSON.GameID);
+		            PlayerID = Cookie.write("playerid", receivedJSON.PlayerID);
+		            TurnNumber = Cookie.write("turnnum", receivedJSON.TurnNumber);
+		
+		            //update the number of players
+		            var TotalPlayers = document.getElementById("numplayers");
+		            TotalPlayers.innerHTML = receivedJSON.NumberPlayers;
+            	}
+                else
+            	{
+                	alert("There are no openings in this game, please join a new one.");
+            	}
             }
         }
         
     	function callServlet()
         {
+    	  //get the player's username from the query string	
+    	  console.log("fetch username");
+    	  var username = gup("username");
+    	  if (username==null)
+		  {
+    		  username = "anonymous";
+		  }
+    	  console.log("username = " + username);
+    	  
+    	  //update the player name on the board
+          var UsernameSpan = document.getElementById("playername");
+          UsernameSpan.innerHTML = username;
+    	  
+    	  //create the json object query string
+    	  var objJSON = 
+    		  {
+    			  "PlayerID" : username
+    		  };
+    	  var strJSON = JSON.encode(objJSON);
+    	  var QueryString = "action=joinGame&content=" + strJSON;
+          
           //create and send the http request
-          var QueryString = "action=GetGameInfo";
-          req.open("GET", "http://127.0.0.1:8888/bullygame/game?" + QueryString, true);
+          req.open("POST", "/bullygame/game?" + QueryString, true);
           req.send(null);
          
         }
@@ -89,7 +180,10 @@ function getGameInfo()
         
         //send the request
         callServlet();
-    	
+	}
+    else
+	{
+    	getGameInfo();
 	}
 }
 
@@ -154,7 +248,7 @@ function getCard()
       
       //create and send the http request
       var QueryString = "action=GetCard&content=" + strJSON;
-      req.open("GET", "http://127.0.0.1:8888/bullygame/game?" + QueryString, true);
+      req.open("GET", "/bullygame/game?" + QueryString, true);
       req.send(null);
      
     }
@@ -168,7 +262,7 @@ function getCard()
 }
 
 //sends a request to the server to use a card
-function useCard(CardNumber)
+function playTurn()
 {
 	function servletCallback()
     {
@@ -221,8 +315,8 @@ function useCard(CardNumber)
       console.log("JSON sent: " + strJSON);
       
       //create and send the http request
-      var QueryString = "action=UseCard&content=" + strJSON;
-      req.open("GET", "http://127.0.0.1:8888/bullygame/game?" + QueryString, true);
+      var QueryString = "action=playTurn&content=" + strJSON;
+      req.open("PUT", "/bullygame/game?" + QueryString, true);
       req.send(null);
      
     }
@@ -230,6 +324,9 @@ function useCard(CardNumber)
     //create a new request & set its event handler
     req = new XMLHttpRequest();
     req.onreadystatechange = servletCallback;
+    
+    //determine the card number
+    var CardNumber = 1;
     
     //send the request
     callServlet();
@@ -249,7 +346,11 @@ function checkState()
             var receivedJSON = JSON.decode(req.responseText);
             
             //create the new html from the json's data
-            var Status = receivedJSON.Status
+            var Status = receivedJSON.Status;
+            
+            //update the turn
+            var TurnNumber = document.getElementById("turn");
+            TurnNumber.innerHTML = receivedJSON.TurnNumber;
             
             //check to see if something was changed
             if (Status=="State Changed")
@@ -262,7 +363,7 @@ function checkState()
     function callServlet()
     {
       //get the session variables
-      checkCookies();
+      //checkCookies();
       var GameID = Cookie.read("gameid");
       var PlayerID = Cookie.read("playerid");
       var TurnNumber = Cookie.read("turnnum")
@@ -280,7 +381,7 @@ function checkState()
       
       //create and send the http request
       var QueryString = "action=CheckState&content=" + strJSON;
-      req.open("GET", "http://127.0.0.1:8888/bullygame/game?" + QueryString, true);
+      req.open("GET", "/bullygame/game?" + QueryString, true);
       req.send(null);
      
     }
