@@ -96,7 +96,6 @@ public class GameState {
 	}
 	
 	//setters
-	
 	private void setStartDate(Date st)
 	{
 		startDate = st;
