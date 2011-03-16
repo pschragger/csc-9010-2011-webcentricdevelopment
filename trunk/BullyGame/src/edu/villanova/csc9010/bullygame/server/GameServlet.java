@@ -7,12 +7,60 @@ import org.json.simple.parser.*;
 
 public class GameServlet  extends HttpServlet
 {
-	int MinRoll = 1;
-	int MaxRoll = 6;
+	static final int MinRoll = 1;
+	static final int MaxRoll = 6;
+	static final int MaxPlayers = 200; //just for testing
+	
+	Integer PlayerTurn = 1;
+	Integer PlayersJoined = 0;
+	String[] PlayersArray = null;
 	
 	private static final long serialVersionUID = 1L;
 	JSONParser parser = new JSONParser();
 	
+	//method to start a new game
+	private void startGame()
+	{
+		PlayerTurn = 1;
+		
+		PlayersArray = new String[MaxPlayers];
+				
+	}
+	
+	//method for adding a new player
+	private String addPlayer(String jsonContent)
+	{
+		String Response = null;
+		
+		//make sure there are open spots
+		if (PlayersJoined<MaxPlayers)
+		{
+			//parse the string into a json object
+			JSONObject json = parseJSON(jsonContent);
+			String Username = json.get("PlayerID").toString();
+			
+			PlayersArray[PlayersJoined] = Username;
+			PlayersJoined++;
+			System.out.println(Username + " joined the game");
+			
+			//make return json
+			json.put("GameID", 1);
+			json.put("TurnNumber", PlayerTurn);
+			json.put("NumberPlayers", PlayersJoined);
+			
+			Response = json.toJSONString();
+		}
+		else
+		{
+			//already at max capacity for players
+			Response = "{\"Status\":\"No openings\"}";
+		}
+		return Response;
+	}
+
+	
+	//utility methods
+	//returns a single die roll
 	private String rollDie()
 	{
 		Integer randomInt = MinRoll + (int)(Math.random() * ((MaxRoll - MinRoll) + 1));
@@ -20,6 +68,7 @@ public class GameServlet  extends HttpServlet
 		return randomInt.toString();
 	}
 	
+	//takes in a string of json content and parses into a real jsonobject
 	private JSONObject parseJSON(String jsonContent)
 	{
 		//parse the raw content into a json object
@@ -39,23 +88,29 @@ public class GameServlet  extends HttpServlet
         return jsonObj;
 	}
 	
+	
+	//Game logic methods
+	//returns json with the current game state
 	private String getGameInfo()
 	{
 		String GameID = "100";
-		String PlayerID = "1";
-		String TurnNumber = "3";
+		String PlayerID = PlayersJoined.toString();
+		PlayersJoined++;
+		String TurnNumber = PlayerTurn.toString();
 		JSONObject response = new JSONObject();
 		
 		response.put("GameID", GameID);
 		response.put("PlayerID", PlayerID);
 		response.put("TurnNumber", TurnNumber);
+		response.put("NumberPlayers",PlayersJoined.toString());
 		
 		return response.toJSONString();
 	}
 
+	//returns the next card in the deck, returns in a json string
 	private String getCard(String jsonContent)
 	{
-		String CardURL = "http://127.0.0.1:8888/images/cards/card1.png";
+		String CardURL = "/images/cards/card1.png";
 		String DiceRoll1 = rollDie();
 		String DiceRoll2 = rollDie();
 		JSONObject response = new JSONObject();
@@ -67,7 +122,8 @@ public class GameServlet  extends HttpServlet
 		return response.toJSONString();
 	}
 
-	private String useCard(String jsonContent)
+	//makes sure a client's suggested move(s) are valid, updates the game's turn #
+	private String playTurn(String jsonContent)
 	{
 		//parse the string into a json object
 		JSONObject json = parseJSON(jsonContent);
@@ -83,6 +139,8 @@ public class GameServlet  extends HttpServlet
 			//update the game state
 			
 			Response = "{\"Status\":\"Valid\"}";
+			
+			PlayerTurn++;
 		}
 		else
 		{
@@ -93,6 +151,7 @@ public class GameServlet  extends HttpServlet
 		return Response;
 	}
     
+	//checks the client's game state against the current game state
 	private String checkState(String jsonContent)
 	{
 		//parse the string into a json object
@@ -108,50 +167,53 @@ public class GameServlet  extends HttpServlet
 		{
 			//update the game state
 			
-			Response = "{\"Status\":\"NoChange\"}";
+			Response = "{\"Status\":\"NoChange\",\"TurnNumber\":\"" + PlayerTurn + "\"}";
 		}
 		else
 		{
 			//still the current user's turn
-			Response = "{\"Status\":\"State Changed\"}";
+			Response = "{\"Status\":\"State Changed\",\"TurnNumber\":\"" + PlayerTurn + "\"}";
 		}
 		
 		return Response;
 	}
 	
+	
+	//HTTP Request handlers
+	//handles GET requests
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
               throws IOException
     {
+		//make sure game is initialized
+		if (PlayersArray==null)
+		{
+			startGame();
+		}
+		
     	//set response error by default, change if content != null
-        String returnString = "Error - content was null";
+        String returnString = null;
         response.setContentType("application/xhtml+xml");
 
         String Command = request.getParameter("action");
         if (Command==null)
         {
         	System.err.println("no action defined");
-        	returnString = "no action defined.";
+        	returnString = "{\"Status\":\"Error\"}";;
         }
         else if (Command.compareTo("GetGameInfo")==0)
         {
-        	System.err.println("getting game info");
+        	System.out.println("getting game info");
             returnString = getGameInfo();
         }
         else if (Command.compareTo("GetCard")==0)
         {
-        	System.err.println("getting a new card");
+        	System.out.println("getting a new card");
         	String jsonContent = request.getParameter("content");
             returnString = getCard(jsonContent);
     	}
-        else if (Command.compareTo("UseCard")==0)
-        {
-        	System.err.println("using a card");
-        	String jsonContent = request.getParameter("content");
-            returnString = useCard(jsonContent);
-    	}
         else if (Command.compareTo("CheckState")==0)
         {
-        	System.err.println("checking for a new state");
+        	System.out.println("checking for a new state");
         	String jsonContent = request.getParameter("content");
             returnString = checkState(jsonContent);
     	}
@@ -202,7 +264,112 @@ public class GameServlet  extends HttpServlet
         System.out.println("Send this json - " + returnString);
         PrintWriter out = response.getWriter();
         out.printf(returnString);
-        out.close();
-        
+        out.close();    
     }
+
+	//handles PUT requests
+	public void doPut(HttpServletRequest request, HttpServletResponse response)
+			throws IOException
+	{
+		//make sure game is initialized
+		if (PlayersArray==null)
+		{
+			startGame();
+		}
+		
+		//set response error by default, change if content != null
+        String returnString = null;
+        response.setContentType("application/xhtml+xml");
+
+        String Command = request.getParameter("action");
+        if (Command==null)
+        {
+        	System.err.println("no action defined");
+        	returnString = "{\"Status\":\"Error\"}";
+        }
+        else if (Command.compareTo("playTurn")==0)
+        {
+        	System.out.println("Making a turn");
+        	String jsonContent = request.getParameter("content");
+            returnString = playTurn(jsonContent);
+    	}
+        
+        
+        //write the return string to the printer
+        System.out.println("Send this json - " + returnString);
+        PrintWriter out = response.getWriter();
+        out.printf(returnString);
+        out.close();
+	}
+
+	//handles POST requests
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+		throws IOException
+	{
+		//make sure game is initialized
+		if (PlayersArray==null)
+		{
+			startGame();
+		}
+		
+		//set response error by default, change if content != null
+        String returnString = null;
+        response.setContentType("application/xhtml+xml");
+
+        String Command = request.getParameter("action");
+        if (Command==null)
+        {
+        	System.err.println("no action defined");
+        	returnString = "{\"Status\":\"Error\"}";
+        }
+        else if (Command.compareTo("joinGame")==0)
+        {
+        	System.out.println("Making a turn");
+        	String jsonContent = request.getParameter("content");
+            returnString = addPlayer(jsonContent);
+    	}
+        
+        
+        //write the return string to the printer
+        System.out.println("Send this json - " + returnString);
+        PrintWriter out = response.getWriter();
+        out.printf(returnString);
+        out.close();
+	}
+
+	//handles POST requests
+	public void doDelete(HttpServletRequest request, HttpServletResponse response)
+		throws IOException
+	{
+		//make sure game is initialized
+		if (PlayersArray==null)
+		{
+			startGame();
+		}
+		
+		//set response error by default, change if content != null
+        String returnString = null;
+        response.setContentType("application/xhtml+xml");
+
+        String Command = request.getParameter("action");
+        if (Command==null)
+        {
+        	System.err.println("no action defined");
+        	returnString = "{\"Status\":\"Error\"}";
+        }
+        else if (Command.compareTo("gameOver")==0)
+        {
+        	System.out.println("game over");
+        	String jsonContent = request.getParameter("content");
+            returnString = "{\"Status\":\"OK\"}";		//addPlayer(jsonContent);
+    	}
+        
+        
+        //write the return string to the printer
+        System.out.println("Send this json - " + returnString);
+        PrintWriter out = response.getWriter();
+        out.printf(returnString);
+        out.close();
+	}
+		
 }
