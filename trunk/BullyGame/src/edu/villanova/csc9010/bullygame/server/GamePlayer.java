@@ -6,8 +6,6 @@
 package edu.villanova.csc9010.bullygame.server;
 
 import com.google.appengine.api.datastore.Key;
-import java.util.ArrayList;
-import java.util.Iterator;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -29,18 +27,16 @@ public class GamePlayer {
 	 * creates a new game and associates players to the game.
 	 * @param pl ArrayList of User emails who are participating in this game.
 	 */
-	public GamePlayer(ArrayList<String> pl)
+	public GamePlayer(String[] pl)
 	{
 		//Creates a new Game object and uses that key to associate the players to that game
 		Key k;
 		GameState gm = new GameState();
 		k = gm.getKey();
-		Iterator<String> iter = pl.iterator();
-		while (iter.hasNext())
+		for (String player : pl)
 		{
-			new GamePlayer(k, iter.next());
+			new GamePlayer(k, player);
 		}
-		
 	}
 	
 	/**
