@@ -9,11 +9,12 @@ import com.google.appengine.api.datastore.Key;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.IdentityType;
 
 /*
  * Data object that stores Game IDs and the Player ID if they are playing that game
  */
-@PersistenceCapable
+@PersistenceCapable(identityType = IdentityType.APPLICATION, objectIdClass=GamePlayerKey.class)
 public class GamePlayer {
 	@PrimaryKey
 	@Persistent
