@@ -22,8 +22,7 @@ public class createGameServlet extends HttpServlet {
 		User user = userService.getCurrentUser();
 		String cu = user.getEmail();
 		
-		@SuppressWarnings("unchecked")
-		ArrayList<String> pl = (ArrayList<String>) req.getAttribute("users");
+		String[] pl = req.getParameterValues("player");
 	
 		
 		GamePlayer game = new GamePlayer(pl);
