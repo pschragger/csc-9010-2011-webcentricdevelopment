@@ -6,7 +6,6 @@
 package edu.villanova.csc9010.bullygame.server;
 
 import com.google.appengine.api.datastore.Key;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.jdo.annotations.PersistenceCapable;
@@ -34,7 +33,7 @@ public class GamePlayer {
 	{
 		//Creates a new Game object and uses that key to associate the players to that game
 		Key k;
-		Game gm = new Game();
+		GameState gm = new GameState();
 		k = gm.getKey();
 		Iterator<String> iter = pl.iterator();
 		while (iter.hasNext())
