@@ -23,13 +23,13 @@ public class Game {
 	private Date startDate;
 	
 	@Persistent
-	private User currentPlayer;
+	private String currentPlayer;
 	
 	@Persistent
 	private boolean active;
 	
 	@Persistent
-	private User winner;
+	private String winner;
 	
 	@Persistent
 	private Date endDate;
@@ -51,12 +51,12 @@ public class Game {
 	 * Create a new Game object
 	 * @param key unique identifier
 	 * @param s Date the game was started
-	 * @param cp the player who is currently making a move
-	 * @param w the winner of the game
+	 * @param cp the email of the player who is currently making a move
+	 * @param w the email of the winner of the game
 	 * @param ed the end date
 	 * @param a true if active, false if not
 	 */
-	public Game(Key key, Date s, User cp, User w, Date ed, boolean a)
+	public Game(Key key, Date s, String cp, String w, Date ed, boolean a)
 	{
 		this.key = key;
 		this.startDate = s;
@@ -79,7 +79,7 @@ public class Game {
 		return startDate;
 	}
 	
-	public User getCurrentPlayer()
+	public String getCurrentPlayer()
 	{
 		return currentPlayer;
 	}
@@ -89,7 +89,7 @@ public class Game {
 		return active;
 	}
 	
-	public User getWinner()
+	public String getWinner()
 	{
 		return winner;
 	}
@@ -106,7 +106,7 @@ public class Game {
 		startDate = st;
 	}
 	
-	private void setCurrentPlayer(User cp)
+	private void setCurrentPlayer(String cp)
 	{
 		currentPlayer = cp;
 	}
@@ -116,7 +116,7 @@ public class Game {
 		active = a;
 	}
 	
-	public void setWinner(User w)
+	public void setWinner(String w)
 	{
 		winner = w;
 	}
