@@ -16,11 +16,6 @@ public class createGameServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(createGameServlet.class.getName());
 	
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-		//Get current logged in user by email
-		UserService userService = UserServiceFactory.getUserService();
-		User user = userService.getCurrentUser();
-		String cu = user.getEmail();
 		
 		String[] pl = req.getParameterValues("player");
 	
@@ -36,6 +31,8 @@ public class createGameServlet extends HttpServlet {
 		{
 			pm.close();
 		}
+		
+		resp.sendRedirect("/jsps/games.jsp");
 	}
 	
 
