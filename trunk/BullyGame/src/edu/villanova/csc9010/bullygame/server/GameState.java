@@ -1,11 +1,7 @@
 package edu.villanova.csc9010.bullygame.server;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.users.User;
-
 import java.util.Date;
-import java.util.ArrayList;
-import java.util.Iterator;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -14,7 +10,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 
 @PersistenceCapable
-public class Game {
+public class GameState {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
@@ -37,7 +33,7 @@ public class Game {
 	/**
 	 * Creates a new game with a unique key, the current date, and sets active as true. All other fields are null 
 	 */
-	public Game()
+	public GameState()
 	{
 		this.startDate = new Date();
 		this.currentPlayer = null;
@@ -56,7 +52,7 @@ public class Game {
 	 * @param ed the end date
 	 * @param a true if active, false if not
 	 */
-	public Game(Key key, Date s, String cp, String w, Date ed, boolean a)
+	public GameState(Key key, Date s, String cp, String w, Date ed, boolean a)
 	{
 		this.key = key;
 		this.startDate = s;
