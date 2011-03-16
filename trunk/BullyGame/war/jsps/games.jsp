@@ -58,6 +58,7 @@
 		Game is inactive. <br />
 <%
 		}
+%>
 	</p>
 <%
 		
