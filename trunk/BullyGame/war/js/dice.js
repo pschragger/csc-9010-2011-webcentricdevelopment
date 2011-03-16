@@ -47,10 +47,10 @@ function createDie(dId, nVal, xPos, yPos, angle) {
 					ctx.fill();	
 				}
 			},
-			onMouseover : function(x,y){
-				this.strokeStyle = 'rgba(0,0,0,1)';
+			mouseover : function(x,y){
+				this.strokeStyle = 'rgba(0,0,0,1)';				
 			},
-			onMouseout : function(x,y){
+			mouseout : function(x,y){
 				this.strokeStyle = 'rgba(0,0,0,0.5)';
 			},
 			click : function(x,y) {
