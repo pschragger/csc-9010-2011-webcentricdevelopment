@@ -27,6 +27,10 @@
     <servlet-name>GameServlet</servlet-name>
     <url-pattern>/bullygame/game</url-pattern>
   </servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>createGameServlet</servlet-name>
+    <url-pattern>/newGame</url-pattern>
+  </servlet-mapping>
   
   <!-- Default page to serve --><servlet-mapping>
   <servlet-name>Users</servlet-name>
