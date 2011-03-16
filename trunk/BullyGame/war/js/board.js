@@ -221,7 +221,7 @@ function setUpBoard()
       
 function onClick()
 {
-	movePiece(pieceToMove,0,amountToMove);
+	movePiece(pieceToMove,0,amount);
 	//drawPath(pieceToMove);
   
 	if(pieceToMove >= 3)
