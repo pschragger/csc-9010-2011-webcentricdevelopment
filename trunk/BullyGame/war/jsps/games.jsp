@@ -5,6 +5,7 @@
 <%@ page import="edu.villanova.csc9010.bullygame.server.GamePlayer" %>
 <%@ page import="edu.villanova.csc9010.bullygame.server.GameState" %>
 <%@ page import="edu.villanova.csc9010.bullygame.server.PawnState" %>
+<%@ page import="edu.villanova.csc9010.bullygame.server.PMF" %>
 
 <html>
 	<body>
@@ -32,19 +33,31 @@
 		Players: 
 <%
 			query = "select from " + GamePlayer.class.getName() + " where game == " + g.getKey();
-			List<GamePlayer> gp = (List<GamePlayer>) pm.newQuery(query.execute();
+			List<GamePlayer> gp = (List<GamePlayer>) pm.newQuery(query).execute();
 			
 			for (GamePlayer player : gp)
 			{
 %>
-				<%= gp.getUser() %>, 
+				<%= player.getUser() %>, 
 <%				
 			}
 %>
 		Current Player: <%= g.getCurrentPlayer() %> <br />
 		Game Winner: <%= g.getWinner() %> <br />
 		Game Ended: <%= g.getEndDate().toString() %> <br />
-		Active Game?: <%= g.getActive().toString() %><br />
+<%
+		if (g.getActive())
+		{
+%>
+		Game is active. <br />
+<%
+		}
+		else
+		{
+%>
+		Game is inactive. <br />
+<%
+		}
 	</p>
 <%
 		
