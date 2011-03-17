@@ -1,3 +1,17 @@
+/*
+ * JSON Object templates
+ * 
+ * to get a card/roll dice, join a game, 
+ * {
+ * 	"PlayerID"	:	"some id",
+ * 	"GameID"	:	"some key",
+ * 	"TurnNumber":	"the turn id"
+ * }
+ * 
+ * 
+ */
+
+
 //old function...only used by the textarea to demonstrate functionality demo
 function sendData(DisplayID, DataID)
 {
