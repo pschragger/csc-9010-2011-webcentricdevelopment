@@ -41,7 +41,7 @@
     <url-pattern>/users/*</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
-    <welcome-file>jsps/index.jsp</welcome-file>
+    <welcome-file>jsp/index.jsp</welcome-file>
   </welcome-file-list>
   
   <filter>
@@ -51,7 +51,7 @@
 
   <filter-mapping>
     <filter-name>sitemesh</filter-name>
-    <url-pattern>/jsps/*</url-pattern>
+    <url-pattern>/jsp/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping>
