@@ -32,7 +32,7 @@ public class createGameServlet extends HttpServlet {
 			pm.close();
 		}
 		
-		resp.sendRedirect("/jsp/games.jsp");
+		resp.sendRedirect("/jsp/game/list.jsp");
 	}
 	
 
