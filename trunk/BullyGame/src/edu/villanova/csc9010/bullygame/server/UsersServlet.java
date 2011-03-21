@@ -10,19 +10,10 @@ public class UsersServlet extends HttpServlet {
 	private static final long serialVersionUID = 2L;
 
 	public void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if(GameUser.loggedInUser() == null) {
-			response.sendRedirect(GameUser.loginUrl());
+		BullyUser user = BullyUser.loggedInUser();
+		if(user == null) {
+			response.sendRedirect(BullyUser.loginUrl());
 		} else {
-			GameUser.onLogin();
-			response.sendRedirect("/");
-		}
-	}
-
-	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if(GameUser.loggedInUser() != null) {
-			response.sendRedirect(GameUser.logoutUrl());
-		} else {
-			GameUser.onLogout();
 			response.sendRedirect("/");
 		}
 	}
@@ -32,6 +23,5 @@ public class UsersServlet extends HttpServlet {
 		String action = bits[bits.length-1];
 		
 		if(action.equals("login")) login(request, response);
-		else if(action.equals("logout")) logout(request, response);
     }
 }

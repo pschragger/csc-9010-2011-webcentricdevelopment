@@ -1,4 +1,7 @@
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
+<%@ page import="edu.villanova.csc9010.bullygame.server.BullyUser" %>
+<% BullyUser user = BullyUser.loggedInUser(); %>
+
 <!DOCTYPE html> 
 <html> 
 <head> 
@@ -13,16 +16,18 @@
     	<jsp:include page="/decorators/includes/navigation.jsp" />
 		<div id='content'>
 			<div id='stats'>
-				You are ranked XXX of 0 players.
+				Rank: <%= user.rank() %> of <%= BullyUser.playerCount() %> players.
+				<br />
+				Stats: <%= user.stats() %>
 			</div>
 			<div id='gameContent'>
     			<decorator:body />
     		</div>
     		<div id='friends'>
-    			Friends list will be located here.
+    			<jsp:include page="/decorators/includes/friends.jsp" />
     		</div>
     		<div id='chat'>
-    			Chat will be here.
+    			<jsp:include page="/decorators/includes/chat.jsp" />
     		</div>
     	</div>
     	<jsp:include page="/decorators/includes/footer.jsp" />
