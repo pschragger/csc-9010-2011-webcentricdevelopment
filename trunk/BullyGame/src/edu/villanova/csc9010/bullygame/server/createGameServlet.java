@@ -31,13 +31,20 @@ public class createGameServlet extends HttpServlet {
 			//store players for game
 			for (String player : pl)
 			{
-				//Automatically assigns player color/order 0 to 3
+				//Assign player color from 0 to 3
 				if (color == 3)
 					color = 0;
 				else
 					color++;
+				
+				//Create 4 pawns at position 0 for this player/color/game combo
+				for (int pNum=0;pNum<4;pNum++)
+				{
+					pm.makePersistent(new PawnState(gKey, color, pNum, 0));
+				}
 
-				pm.makePersistent(new GamePlayer(gKey, player, color));
+				//Create Game/Player association
+				pm.makePersistent(new GamePlayer(gKey, player, color,1));
 			}
 			
 		}
@@ -46,7 +53,7 @@ public class createGameServlet extends HttpServlet {
 			pm.close();
 		}
 		
-		resp.sendRedirect("/jsp/list.jsp");
+		resp.sendRedirect("/jsp/game/list.jsp");
 	}
 	
 
