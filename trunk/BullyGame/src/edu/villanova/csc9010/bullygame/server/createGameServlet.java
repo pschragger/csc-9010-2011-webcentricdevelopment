@@ -13,19 +13,20 @@ public class createGameServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		
-		String[] pl = req.getParameterValues("player");
+		String[] pl = req.getParameterValues("player"); 
 		int color = 0;
-		
-	
 		Key gKey;
+		
 		GameState game = new GameState();
-		gKey = game.getKey();
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try 
 		{
 			//store GameState
 			pm.makePersistent(game);
+			
+			gKey = game.getKey();
+			System.out.println("String gKey is: " + gKey);
 			
 			//store players for game
 			for (String player : pl)
@@ -35,9 +36,8 @@ public class createGameServlet extends HttpServlet {
 					color = 0;
 				else
 					color++;
-				
-				System.out.println(player);
-				pm.makePersistent(new GamePlayer(gKey, player,color));
+
+				pm.makePersistent(new GamePlayer(gKey, player, color));
 			}
 			
 		}
@@ -46,7 +46,7 @@ public class createGameServlet extends HttpServlet {
 			pm.close();
 		}
 		
-		resp.sendRedirect("/jsp/game/list.jsp");
+		resp.sendRedirect("/jsp/list.jsp");
 	}
 	
 
