@@ -30,19 +30,24 @@ public class GamePlayer {
 	@Persistent
 	private int color;
 	
+	@Persistent
+	private int status;
+	
 	/**
 	 * Associates the game key with the user
 	 * @param g Game key
 	 * @param u Email of the user
 	 * @param c Color of the player's pawn. This will determine order. 
 	 */
-	public GamePlayer(Key game, String user, int color)
+	public GamePlayer(Key game, String user, int color, int status)
 	{
 		this.game = game;
 		this.user = user;
 		this.color = color;
+		this.status = status;
 	}
 	
+	//getters
 	public Key getGPID()
 	{
 		return gpID;
@@ -63,9 +68,20 @@ public class GamePlayer {
 		return color;
 	}
 	
+	public int getStatus()
+	{
+		return status;
+	}
+	
+	//setters
 	public void setGame(Key game)
 	{
 		this.game = game;
+	}
+	
+	public void setStatus(int status)
+	{
+		this.status = status;
 	}
 	
 	public void setUser(String user)
