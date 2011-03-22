@@ -18,58 +18,54 @@
 	if (games.isEmpty())
 	{
 %>
-	<p>There are no games available</p>
+		<p>There are no games available</p>
 <%
 
 	}
 	else
 	{
-		for (GameState g : games)
-		{
 %>
-	<p>
-		GameID: <%= g.getKey() %> <br />
-		Game Started: <%= g.getStartDate().toString() %> <br />
-		Players: 
-<%
-			query = "select from " + GamePlayer.class.getName() + " where game == " + g.getKey();
-			List<GamePlayer> gp = (List<GamePlayer>) pm.newQuery(query).execute();
+		<p>Found <%= games.size() %> games</p>
+<%	
+		for (GameState gm : games)
+		{
+		%>
+			<p>
+			Game Key: <%= gm.getKey().toString() %>.<br />
+			Game Started: <%= gm.getStartDate().toString() %><br />
+			Current Player: <%= gm.getCurrentPlayer() %><br />
+			Activity: <%= gm.getActive() %><br />
+			Winner: <%= gm.getWinner() %><br />
+			Game End: <%= gm.getEndDate() %><br />
+			Players:
+			<%
+			String pquery = "select from " + GamePlayer.class.getName();
+			List<GamePlayer> players = (List<GamePlayer>) pm.newQuery(pquery).execute();
 			
-			for (GamePlayer player : gp)
+			if (players.size() != 0)
 			{
-%>
-				<%= player.getUser() %>, 
-<%				
+				for (GamePlayer player : players)
+				{
+					if((player.getGame() != null) && (player.getGame().getId()==gm.getKey().getId()))
+					{
+						System.out.println("Player game: "+player.getGame().getId());
+					%>
+						<%= player.getUser() %> is Player <%= player.getColor() %> for Game <%= player.getGame().getId() %>.<br />
+					<%
+					}
+				}
 			}
-%>
-		Current Player: <%= g.getCurrentPlayer() %> <br />
-		Game Winner: <%= g.getWinner() %> <br />
-		Game Ended: <%= g.getEndDate().toString() %> <br />
-<%
-		if (g.getActive())
-		{
-%>
-		Game is active. <br />
-<%
-		}
-		else
-		{
-%>
-		Game is inactive. <br />
-<%
-		}
-%>
-	</p>
-<%
-		
+				%>
+			</p><br />
+		<%			
 		}
 	}
 %>
 
 <form action="/newGame" method="post">
-	<input type="text" id="player">
-	<input type="text" id="player">
-	<input type="text" id="player">
-	<input type="text" id="player">
+	<label>Player 1</label><input type="text" id="player" name="player">
+	<label>Player 2</label><input type="text" id="player" name="player">
+	<label>Player 3</label><input type="text" id="player" name="player">
+	<label>Player 4</label><input type="text" id="player" name="player">
 	<input type="submit" value="Create Game" />
 </form>
