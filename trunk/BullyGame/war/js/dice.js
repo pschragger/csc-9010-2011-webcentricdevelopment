@@ -100,7 +100,8 @@ function setDice(v1,v2) {
 // TEMP Function. Will be replaced with AJAX call.
 function rollDice() {   			   		
 	// Get Random values
-	var v1 = Math.ceil(Math.random()*6);
-	var v2 = Math.ceil(Math.random()*6);
-	setDice(v1,v2);
+//	var v1 = Math.ceil(Math.random()*6);
+//	var v2 = Math.ceil(Math.random()*6);
+//	setDice(v1,v2);
+	getCard();
 } 
