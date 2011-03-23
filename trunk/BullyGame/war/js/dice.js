@@ -94,14 +94,24 @@ function setDice(v1,v2) {
 	var d2 = createDie('d2', v2, p2x,p2y, 0);
 	drawDiceRoll(d1,d2);
 	$('diceroll').play();
-	$('diceButton').disabled = true;	
+	//$('diceButton').disabled = true;	
 }
 
 // TEMP Function. Will be replaced with AJAX call.
 function rollDice() {   			   		
 	// Get Random values
-//	var v1 = Math.ceil(Math.random()*6);
-//	var v2 = Math.ceil(Math.random()*6);
-//	setDice(v1,v2);
-	getCard();
+	var v1 = Math.ceil(Math.random()*6);
+	var v2 = Math.ceil(Math.random()*6);
+	setDice(v1,v2);
+	
+	return v1+v2;
 } 
+
+function beginTurn() {
+	$('diceButton').disabled = true;
+	takeTurnWithDice(rollDice());
+	setTimeout("takeTurnWithDice(rollDice())",1250);
+	setTimeout("takeTurnWithDice(rollDice())",1250*2);
+	setTimeout("takeTurnWithDice(rollDice())",1250*3);
+	setTimeout("$('diceButton').disabled = false;",1250*3)
+}
