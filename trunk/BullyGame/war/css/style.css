@@ -90,8 +90,15 @@
 		#chat {
 			clear: both;
 			padding: 10px;
-			height: 100px;
+			height: 200px;
 		}
+		
+			#chat iframe {
+				border: none;
+				height: 200px;
+				margin-left: 50px;
+				width: 800px;
+			}
 	
 	#footer {
 		border-top: 1px solid grey;

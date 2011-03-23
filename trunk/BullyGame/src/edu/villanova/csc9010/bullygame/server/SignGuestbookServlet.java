@@ -30,6 +30,6 @@ public class SignGuestbookServlet extends HttpServlet {
             pm.close();
         }
 
-        resp.sendRedirect("jsp/guestbook.jsp");
+        resp.sendRedirect("/decorators/includes/guestbook.jsp");
     }
 }
