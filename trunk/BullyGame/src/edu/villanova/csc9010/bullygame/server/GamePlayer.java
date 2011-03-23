@@ -22,7 +22,7 @@ public class GamePlayer {
 	private Key gpID;
 	
 	@Persistent
-	private Key game;
+	private long gameID;
 	
 	@Persistent
 	private String user;
@@ -39,9 +39,9 @@ public class GamePlayer {
 	 * @param u Email of the user
 	 * @param c Color of the player's pawn. This will determine order. 
 	 */
-	public GamePlayer(Key game, String user, int color, int status)
+	public GamePlayer(long gameID, String user, int color, int status)
 	{
-		this.game = game;
+		this.gameID = gameID;
 		this.user = user;
 		this.color = color;
 		this.status = status;
@@ -53,9 +53,9 @@ public class GamePlayer {
 		return gpID;
 	}
 	
-	public Key getGame()
+	public long getGame()
 	{
-		return game;
+		return gameID;
 	}
 	
 	public String getUser()
@@ -74,9 +74,9 @@ public class GamePlayer {
 	}
 	
 	//setters
-	public void setGame(Key game)
+	public void setGame(long gameID)
 	{
-		this.game = game;
+		this.gameID = gameID;
 	}
 	
 	public void setStatus(int status)

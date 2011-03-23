@@ -14,8 +14,8 @@ public class createGameServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		
 		String[] pl = req.getParameterValues("player"); 
-		int color = 0;
-		Key gKey;
+		int color = 3;
+		long gKey;
 		
 		GameState game = new GameState();
 		
@@ -24,27 +24,28 @@ public class createGameServlet extends HttpServlet {
 		{
 			//store GameState
 			pm.makePersistent(game);
-			
-			gKey = game.getKey();
-			System.out.println("String gKey is: " + gKey);
+			gKey = game.getKey().getId();
 			
 			//store players for game
 			for (String player : pl)
 			{
-				//Assign player color from 0 to 3
-				if (color == 3)
-					color = 0;
-				else
-					color++;
-				
-				//Create 4 pawns at position 0 for this player/color/game combo
-				for (int pNum=0;pNum<4;pNum++)
+				if (player != null && player.trim() != "")
 				{
-					pm.makePersistent(new PawnState(gKey, color, pNum, 0));
+					//Assign player color from 0 to 3
+					if (color == 3)
+						color = 0;
+					else
+						color++;
+					
+					//Create 4 pawns at position 0 for this player/color/game combo
+					for (int pNum=0;pNum<4;pNum++)
+					{
+						pm.makePersistent(new PawnState(gKey, color, pNum, 0));
+					}
+	
+					//Create Game/Player association
+					pm.makePersistent(new GamePlayer(gKey, player, color,1));
 				}
-
-				//Create Game/Player association
-				pm.makePersistent(new GamePlayer(gKey, player, color,1));
 			}
 			
 		}

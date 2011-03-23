@@ -21,7 +21,7 @@
 				<br />
 				Stats: <%= user.stats() %>
 			</div>
-			<% } %>
+		<% } %>
 			<div id='gameContent'>
     			<decorator:body />
     		</div>
