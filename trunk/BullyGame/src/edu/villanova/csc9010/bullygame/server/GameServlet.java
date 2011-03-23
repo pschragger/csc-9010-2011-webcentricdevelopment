@@ -9,10 +9,11 @@ public class GameServlet  extends HttpServlet
 {
 	static final int MinRoll = 1;
 	static final int MaxRoll = 6;
-	static final int MaxPlayers = 200; //just for testing
+	static final int MaxPlayers = 2; //just for testing
 	
-	Integer PlayerTurn = 1;
+	Integer PlayerTurn = 0;
 	Integer PlayersJoined = 0;
+	boolean AllPlayersJoined = false;
 	String[] PlayersArray = null;
 	
 	private static final long serialVersionUID = 1L;
@@ -21,8 +22,6 @@ public class GameServlet  extends HttpServlet
 	//method to start a new game
 	private void startGame()
 	{
-		PlayerTurn = 1;
-		
 		PlayersArray = new String[MaxPlayers];
 				
 	}
@@ -35,18 +34,27 @@ public class GameServlet  extends HttpServlet
 		//make sure there are open spots
 		if (PlayersJoined<MaxPlayers)
 		{
+			
 			//parse the string into a json object
 			JSONObject json = parseJSON(jsonContent);
 			String Username = json.get("PlayerID").toString();
 			
+			//add user to the players array
 			PlayersArray[PlayersJoined] = Username;
 			PlayersJoined++;
 			System.out.println(Username + " joined the game");
+			
+			//check to see if game if now full
+			if (PlayersJoined==MaxPlayers)
+			{
+				PlayerTurn++;
+			}
 			
 			//make return json
 			json.put("GameID", 1);
 			json.put("TurnNumber", PlayerTurn);
 			json.put("NumberPlayers", PlayersJoined);
+			json.put("PlayerTurnID", PlayersJoined-1);
 			
 			Response = json.toJSONString();
 		}
@@ -166,8 +174,13 @@ public class GameServlet  extends HttpServlet
 		if (SameState)
 		{
 			//update the game state
+			json.put("Status", "NoChange");
+			json.put("TurnNumber", PlayerTurn);
+			json.put("TotalPlayers", PlayersJoined);
+			json.remove("PlayerID");
+			json.remove("GameID");
 			
-			Response = "{\"Status\":\"NoChange\",\"TurnNumber\":\"" + PlayerTurn + "\"}";
+			Response = json.toJSONString();		//"{\"Status\":\"NoChange\",\"TurnNumber\":\"" + PlayerTurn + "\"}";
 		}
 		else
 		{
@@ -327,6 +340,11 @@ public class GameServlet  extends HttpServlet
         	System.out.println("Making a turn");
         	String jsonContent = request.getParameter("content");
             returnString = addPlayer(jsonContent);
+            
+            if (PlayersArray.length==MaxPlayers)
+            {
+            	//start the game
+            }
     	}
         
         
