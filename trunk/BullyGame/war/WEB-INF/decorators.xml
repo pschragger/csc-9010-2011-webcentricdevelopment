@@ -1,0 +1,9 @@
+<decorators>
+  <decorator name="gameLayout" page="/decorators/game.jsp">
+    <pattern>/jsp/game/*</pattern>
+  </decorator>
+  <decorator name="siteLayout" page="/decorators/main.jsp">
+    <pattern>/jsp/*</pattern>
+    <pattern>/</pattern>
+  </decorator>
+</decorators>

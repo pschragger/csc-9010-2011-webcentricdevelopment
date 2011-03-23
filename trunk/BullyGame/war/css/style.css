@@ -1,0 +1,115 @@
+@font-face {
+	font-family: tf2;
+	src: url("/css/tf2.ttf");
+}
+
+@font-face {
+	font-family: tf2Bold;
+	src: url("/css/tf2build.ttf");
+}
+  
+ body {
+	background-color: #264AB5;
+	font-family: calibri;
+}
+
+#container {
+	background-color: white;
+	border: 2px solid black;
+	border-radius: 15px;
+	box-shadow: 5px 5px 8px #000;
+	margin: 10px auto 0 auto;
+	width: 980px;
+}
+
+	#top {
+		padding: 10px;
+		position: relative;
+	}
+	
+		#top h1 {
+			font-size: 50px;
+			text-align: center;
+			font-family: tf2;
+		}
+	
+		#user {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+		}
+	
+	#nav {
+		background-color: #B3C2FF;
+		border-bottom: 1px solid #264AB5;
+		list-style-type: none;
+	}
+		#nav li {
+			display: block;
+			float: left;
+			padding: 2px 10px;
+		}
+			#nav li a {
+				color: black;
+				font-family: tf2Bold;
+				font-size: 16px;
+				font-weight: bold;
+				text-decoration: underline;
+			}
+	
+	#content {
+		padding: 10px;
+	}
+	#gameLayout #content {
+		background-color: #EDF0FF;
+		padding: 0;
+	}
+		#stats {
+			float: left;
+			padding: 10px 5px;
+			width: 100px;
+		}
+		
+		#gameContent {
+			background-color: #FFFFFF;
+			border-color: #B3C2FF;
+			border-width: 0px 1px 1px 1px;
+			border-style: solid;
+			float: left;
+			padding: 10px;
+			min-height: 300px;
+			width: 680px;
+		}
+		
+		#friends {
+			float: left;
+			padding: 10px 5px;
+			width: 150px;
+		}
+		
+		#chat {
+			clear: both;
+			padding: 10px;
+			height: 100px;
+		}
+	
+	#footer {
+		border-top: 1px solid grey;
+		font-size: 11px;
+		padding: 2px 0;
+		text-align: center;
+	}
+
+body .clear {
+	font-size: 0px;
+	line-height: 0px;
+	clear: both !important;
+}
+
+a, a:visited, a:active {
+	color: #225EB3;	
+}
+
+a:hover {
+	color: #000000;
+}
