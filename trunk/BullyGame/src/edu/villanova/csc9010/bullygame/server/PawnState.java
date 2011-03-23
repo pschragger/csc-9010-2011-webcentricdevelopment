@@ -13,10 +13,10 @@ public class PawnState {
 	private Key pawnID;
 	
 	@Persistent
-	private Key game;
+	private long gameID;
 	
 	@Persistent
-	private String pawnColor;
+	private int pawnColor;
 	
 	@Persistent
 	private int pawnNum;
@@ -26,14 +26,14 @@ public class PawnState {
 	
 	/**
 	 * Creates a new PawnState object to store the location of a game piece
-	 * @param game Key for the game the pawn belongs to
-	 * @param pawnColor Color of the pawn
+	 * @param gameID Key for the game the pawn belongs to
+	 * @param pawnColor Color of the pawn. Determines play order.
 	 * @param pawnNum Number of the pawn
 	 * @param pawnPos Position on the board
 	 */
-	public PawnState(Key game, String pawnColor, int pawnNum, int pawnPos)
+	public PawnState(long gameID, int pawnColor, int pawnNum, int pawnPos)
 	{
-		this.game = game;
+		this.gameID = gameID;
 		this.pawnColor = pawnColor;
 		this.pawnNum = pawnNum;
 		this.pawnPos = pawnPos;
@@ -47,10 +47,10 @@ public class PawnState {
 	 * @param pawnNum
 	 * @param pawnPos
 	 */
-	public PawnState(Key pawnID, Key game, String pawnColor, int pawnNum, int pawnPos)
+	public PawnState(Key pawnID, long gameID, int pawnColor, int pawnNum, int pawnPos)
 	{
 		this.pawnID = pawnID;
-		this.game = game;
+		this.gameID = gameID;
 		this.pawnColor = pawnColor;
 		this.pawnNum = pawnNum;
 		this.pawnPos = pawnPos;
@@ -62,12 +62,12 @@ public class PawnState {
 		return pawnID;
 	}
 	
-	public Key getGame()
+	public long getGameID()
 	{
-		return game;
+		return gameID;
 	}
 	
-	public String getPawnColor()
+	public int getPawnColor()
 	{
 		return pawnColor;
 	}
@@ -83,12 +83,12 @@ public class PawnState {
 	}
 	
 	//SETTERS
-	public void setGame(Key game)
+	public void setGameID(long gameID)
 	{
-		this.game = game;
+		this.gameID = gameID;
 	}
 	
-	public void setPawnColor(String pawnColor)
+	public void setPawnColor(int pawnColor)
 	{
 		this.pawnColor = pawnColor;
 	}

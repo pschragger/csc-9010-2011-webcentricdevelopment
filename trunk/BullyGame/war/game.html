@@ -1,10 +1,31 @@
 <html>
-  <head>
-   	<script type="text/javascript" src="js/square.js"></script>  
-    <script type="text/javascript" src="js/pawn.js"></script>
-    <script type="text/javascript" src="js/board.js"></script>
-  </head>
-  <body onLoad="setUpBoard();" onClick = "onClick();">
-    <canvas id="canvas" width="510" height="510"></canvas>
-  </body>
+<head>
+	<script type="text/javascript" src="js/lib/mootools-core-1.3.js"></script>
+    <script type="text/javascript" src="js/lib/mcl-min.js"></script>
+	<script type="text/javascript" src="js/dice.js"></script>
+	<script type="text/javascript" src="js/square.js"></script>  
+	<script type="text/javascript" src="js/pawn.js"></script>
+	<script type="text/javascript" src="js/point.js"></script>
+	<script type="text/javascript" src="js/board.js"></script>   	
+   	<script type="text/javascript" src="js/services.js"></script>
+   	<script type="text/javascript"> 	
+		$(window).addEvent('load',function(){
+			setUpBoard();
+			//initq();
+   		});
+   	</script>
+
+   	
+</head>
+<body>
+  	
+  	<canvas id="diceCanvas" width="250" height="100" style="z-index: 1;border: 2px solid black;background-image: url('images/green_felt.jpg');"></canvas>
+  	<br/>
+  	<input id="diceButton" type="button" value="Roll Dice" onclick="beginTurn()">
+  	<br/>
+  	<canvas id="canvas" style="z-index: 2;" width="625" height="625"></canvas>   
+	<br/>
+      	
+	<audio id="diceroll" src="audio/diceroll1.wav" preload="auto"/>
+</body>
 </html>

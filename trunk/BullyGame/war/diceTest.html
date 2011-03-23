@@ -3,18 +3,21 @@
     <script type="text/javascript" src="js/lib/mootools-core-1.3.js"></script>
     <script type="text/javascript" src="js/lib/mcl-min.js"></script>
    	<script type="text/javascript" src="js/dice.js"></script>
-   	<script type="text/javascript" src="js/services.js"></script>
+   	<script type="text/javascript" src="js/ClientActions.js"></script>
    	<script type="text/javascript">
    		function reloadAndDraw() {   			   		
    			// Get Random values
    			var v1 = Math.ceil(Math.random()*6);
    			var v2 = Math.ceil(Math.random()*6);
    			// Get Random positions
-   			var p1x = Math.floor(Math.random()*(500-DIE_LENGTH));
-   			var p1y = Math.floor(Math.random()*(200-DIE_LENGTH));
+   			var dCanvas = $('canvas');
+   			var width = dCanvas.get('width');   			
+   			var height = dCanvas.get('height');
+   			var p1x = Math.floor(Math.random()*(width-DIE_LENGTH));
+   			var p1y = Math.floor(Math.random()*(height-DIE_LENGTH));
    			do {
-   			   	var p2x = Math.floor(Math.random()*(500-DIE_LENGTH));
-   				var p2y = Math.floor(Math.random()*(200-DIE_LENGTH));   			
+   			   	var p2x = Math.floor(Math.random()*(width-DIE_LENGTH));
+   				var p2y = Math.floor(Math.random()*(height-DIE_LENGTH));   			
    			} while (Math.abs(p2x-p1x) <= DIE_LENGTH && Math.abs(p2y-p1y)<=DIE_LENGTH);   			
    			var d1 = createDie('d1', v1, p1x,p1y, 30);
    			var d2 = createDie('d2', v2, p2x,p2y, 0);
@@ -28,7 +31,7 @@
   </head>
   <body>
 
-    <canvas id="diceCanvas" width="500" height="200" style="border: 2px solid black;background-image: url('images/green_felt.jpg');"></canvas>
+    <canvas id="canvas" width="250" height="100" style="border: 2px solid black;background-image: url('images/green_felt.jpg');"></canvas>
     <br/>    
     <input type="button" value="Roll Again" onclick="reloadAndDraw();"/>
   	<audio id="diceroll" src="audio/diceroll1.wav" preload="auto"/>

@@ -22,6 +22,14 @@
     <servlet-name>createGame</servlet-name>
     <servlet-class>edu.villanova.csc9010.bullygame.server.createGameServlet</servlet-class>
   </servlet>
+  <servlet>
+        <servlet-name>sign</servlet-name>
+        <servlet-class>edu.villanova.csc9010.bullygame.server.SignGuestbookServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>sign</servlet-name>
+        <url-pattern>/sign</url-pattern>
+    </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
@@ -40,8 +48,11 @@
   <servlet-name>Users</servlet-name>
     <url-pattern>/users/*</url-pattern>
   </servlet-mapping>
+	
+
+	
   <welcome-file-list>
-    <welcome-file>jsps/index.jsp</welcome-file>
+    <welcome-file>jsp/index.jsp</welcome-file>
   </welcome-file-list>
   
   <filter>
@@ -51,7 +62,7 @@
 
   <filter-mapping>
     <filter-name>sitemesh</filter-name>
-    <url-pattern>/jsps/*</url-pattern>
+    <url-pattern>/jsp/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping>
