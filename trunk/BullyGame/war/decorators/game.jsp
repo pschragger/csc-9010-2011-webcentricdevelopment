@@ -15,11 +15,13 @@
 	<div id='container'>
     	<jsp:include page="/decorators/includes/navigation.jsp" />
 		<div id='content'>
+		<% if (user != null) { %>
 			<div id='stats'>
 				Rank: <%= user.rank() %> of <%= BullyUser.playerCount() %> players.
 				<br />
 				Stats: <%= user.stats() %>
 			</div>
+			<% } %>
 			<div id='gameContent'>
     			<decorator:body />
     		</div>
