@@ -25,43 +25,19 @@
 	else
 	{
 %>
-		<p>Found <%= games.size() %> games</p>
+		<p>Found <%= games.size() %> games</p><br />
 <%	
 		for (GameState gm : games)
 		{
 		%>
 			<p>
-			Game Key: <%= gm.getKey().toString() %>.<br />
-			Game Started: <%= gm.getStartDate().toString() %><br />
-			Current Player: <%= gm.getCurrentPlayer() %><br />
-			Activity: <%= gm.getActive() %><br />
-			Winner: <%= gm.getWinner() %><br />
-			Game End: <%= gm.getEndDate() %><br />
-			Players:
-			<%
-			String pquery = "select from " + GamePlayer.class.getName();
-			List<GamePlayer> players = (List<GamePlayer>) pm.newQuery(pquery).execute();
-			
-			if (players.size() != 0)
-			{
-				for (GamePlayer player : players)
-				{
-					if((player.getGame() != null) && (player.getGame().getId()==gm.getKey().getId()))
-					{
-						System.out.println("Player game: "+player.getGame().getId());
-					%>
-						<%= player.getUser() %> is Player <%= player.getColor() %> for Game <%= player.getGame().getId() %>.<br />
-					<%
-					}
-				}
-			}
-				%>
-			</p><br />
+			<a href="update.jsp?game=<%= gm.getKey().getId() %>">Game <%= gm.getKey().getId() %></a> was started <%= gm.getStartDate().toString() %><br />
+			</p>
 		<%			
 		}
 	}
 %>
-
+<br />
 <form action="/newGame" method="post">
 	<label>Player 1</label><input type="text" id="player" name="player">
 	<label>Player 2</label><input type="text" id="player" name="player">
