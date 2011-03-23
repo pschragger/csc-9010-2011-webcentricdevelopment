@@ -82,7 +82,7 @@ function drawDiceRoll(d1,d2) {
 	layer.draw();
 }
 
-function positionDice(v1,v2) {
+function setDice(v1,v2) {
 	// Get Random positions
 	var p1x = Math.floor(Math.random()*(250-DIE_LENGTH));
 	var p1y = Math.floor(Math.random()*(100-DIE_LENGTH));
@@ -102,5 +102,5 @@ function rollDice() {
 	// Get Random values
 	var v1 = Math.ceil(Math.random()*6);
 	var v2 = Math.ceil(Math.random()*6);
-	positionDice(v1,v2);
+	setDice(v1,v2);
 } 
