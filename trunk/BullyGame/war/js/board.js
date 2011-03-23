@@ -326,28 +326,31 @@ function setUpBoard()
 
 function takeTurnWithDice(roll)
 {
-	// Player's turn - TEMPORARY
-	if(colorToMove == 0)
+	if(!gameOver)
 	{
-		var whichPiece = prompt("Which piece would you like to move? 0 or 1? ", "(enter a 0 or a 1)");
-		movePiece(colorToMove,whichPiece,roll);
-	}
-	else
-		movePiece(colorToMove,pieceToMove,roll);
-
-	if(colorToMove >= 3)
-	{
-		colorToMove = 0;
-  
-		if(pieceToMove == 1)
-			pieceToMove = 0;
+		// Player's turn - TEMPORARY
+		if(colorToMove == 0)
+		{
+			var whichPiece = prompt("Which piece would you like to move? 0 or 1? ", "(enter a 0 or a 1)");
+			movePiece(colorToMove,whichPiece,roll);
+		}
 		else
-			pieceToMove = 1;
+			movePiece(colorToMove,pieceToMove,roll);
+	
+		if(colorToMove >= 3)
+		{
+			colorToMove = 0;
+	  
+			if(pieceToMove == 1)
+				pieceToMove = 0;
+			else
+				pieceToMove = 1;
+		}
+		else
+			colorToMove++;
 	}
 	else
-		colorToMove++;
-	
-	
+		$('diceButton').disabled = true;
 } // end takeTurnWithDice(roll)
 
 function movePiece(color, piece, amount)
