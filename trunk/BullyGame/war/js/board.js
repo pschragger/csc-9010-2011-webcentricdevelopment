@@ -24,12 +24,16 @@ var gameOver = false;
 
 function setUpBoard()
 {
-  var canvas = document.getElementById("canvas");
-  if (canvas.getContext)
-  {
+	CANVAS.init({ canvasElement : 'canvas' });
+	CANVAS.clear();
+	var ctx = CANVAS.layers.add( new Layer({
+		id : 'mainLayer'
+	}));
+	if (canvas.getContext) {
     gameOver = false;
 
     var ctx = canvas.getContext("2d");
+	
     ctx.strokeStyle = "rgb(0,0,0)";
 
     var squares = [64];
