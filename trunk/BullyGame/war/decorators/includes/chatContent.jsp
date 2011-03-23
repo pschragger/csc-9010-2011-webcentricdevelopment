@@ -7,9 +7,6 @@
 <%@ page import="edu.villanova.csc9010.bullygame.server.Greeting" %>
 <%@ page import="edu.villanova.csc9010.bullygame.server.PMF" %>
 
-<html>
-  <body>
-
 <%
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
@@ -53,13 +50,3 @@ To chat</p>
     }
     pm.close();
 %>
-<script>
-</script>
-
-    <form action="/sign" method="post">
-      <div><textarea name="content" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="send" /></div>
-    </form>
-
-  </body>
-</html>

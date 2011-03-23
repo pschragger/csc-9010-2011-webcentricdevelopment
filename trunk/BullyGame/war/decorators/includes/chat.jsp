@@ -1,1 +1,0 @@
-This is where chat will go.  This should probably be a div with overflow:scroll; And then we can make an ajax request to load the content so that the display for chat is in one place only.

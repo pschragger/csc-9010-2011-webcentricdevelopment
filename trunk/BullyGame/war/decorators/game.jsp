@@ -31,7 +31,7 @@
     			<jsp:include page="/decorators/includes/friends.jsp" />
     		</div>
     		<div id='chat'>
-    			<jsp:include page="/decorators/includes/chat.jsp" />
+    			<iframe src='/decorators/includes/guestbook.jsp'></iframe>
     		</div>
     	</div>
     	<jsp:include page="/decorators/includes/footer.jsp" />
