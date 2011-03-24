@@ -3,13 +3,19 @@ function sendData(DisplayID, DataID) {
 	// Create Request
 	var jsonRequest = new Request.JSON({
 	    url: '/bullygame/game',
-	    onSuccess: function(responseJSON){
+	    method: 'get',
+	    onSuccess: function(responseText){
+            console.log("callback received...");
+            
+            //decode the json and put it in an object
+            var receivedJSON = JSON.decode(req.responseText);
+            
             //create the new html from the json's data
-            var newHtml = "<p>" + responseJSON.Data + "</p>";
+            var newHtml = "<p>" + receivedJSON.Data + "</p>";
             console.log("new html = " + newHtml);
             
             //get the div id of a html element, and update its contents
-            var MyDiv = document.getElementById(responseJSON.DivId);
+            var MyDiv = document.getElementById(receivedJSON.DivId);
             MyDiv.innerHTML=newHtml;
 	    },
 	    onFailure: function(){
@@ -22,7 +28,7 @@ function sendData(DisplayID, DataID) {
       "Data" : $('dataElement').value
     };
     // Send Request
-	jsonRequest.get({
+	jsonRequest.send({
 		'action' : 'else',
 		'content' : JSON.encode(objJSON)
 	});   
@@ -47,9 +53,15 @@ function getGameInfo()
 	// Create Request
 	var jsonRequest = new Request.JSON({
 	    url: '/bullygame/game',
-	    onSuccess: function(responseJSON){
+	    method: 'get',
+	    onSuccess: function(responseText){
+            console.log("cookies received...");
+            
+            //decode the json and put it in an object
+            var receivedJSON = JSON.decode(req.responseText);
+            
             //update the cookies
-            TurnNumber = Cookie.write("turnnum", responseJSON.TurnNumber);
+            TurnNumber = Cookie.write("turnnum", receivedJSON.TurnNumber);
 	    },
 	    onFailure: function(){
 	        alert("Error communicating with server.");
@@ -58,7 +70,7 @@ function getGameInfo()
 	// Create JSON object
     var objJSON = createBaseJSONObj();
     // Send Request
-	jsonRequest.get({
+	jsonRequest.send({
 		'action' : 'GetGameInfo',
 		'content' : JSON.encode(objJSON)
 	});
@@ -75,16 +87,22 @@ function joinGame()
     	// Create Request
     	var jsonRequest = new Request.JSON({
     	    url: '/bullygame/game',
-    	    onSuccess: function(responseJSON){
-                if(!responseJSON.Status) {
+    	    method: 'post',
+    	    onSuccess: function(responseText){
+                console.log("cookies received...");
+                
+                //decode the json and put it in an object
+                var receivedJSON = JSON.decode(req.responseText);
+                
+                if(!receivedJSON.Status) {
     	            //create the new cookies
-    	            GameID = Cookie.write("gameid", responseJSON.GameID);
-    	            PlayerID = Cookie.write("playerid", responseJSON.PlayerID);
-    	            TurnNumber = Cookie.write("turnnum", responseJSON.TurnNumber);
+    	            GameID = Cookie.write("gameid", receivedJSON.GameID);
+    	            PlayerID = Cookie.write("playerid", receivedJSON.PlayerID);
+    	            TurnNumber = Cookie.write("turnnum", receivedJSON.TurnNumber);
     	
     	            //update the number of players
     	            var TotalPlayers = document.getElementById("numplayers");
-    	            TotalPlayers.innerHTML = responseJSON.NumberPlayers;
+    	            TotalPlayers.innerHTML = receivedJSON.NumberPlayers;
             	} else {
                 	alert("There are no openings in this game, please join a new one.");
             	}
@@ -106,7 +124,7 @@ function joinGame()
 			'PlayerID' : username
 		};
 		// Send Request
-		jsonRequest.post({
+		jsonRequest.send({
 			'action' : 'GetGameInfo',
 			'content' : JSON.encode(objJSON)
 		});
@@ -144,20 +162,23 @@ function getCard()
 	// Create Request
 	var jsonRequest = new Request.JSON({
 	    url: '/bullygame/game',
-	    onSuccess: function(responseJSON){
+	    method: 'get',
+	    onSuccess: function(responseText){
+            console.log("callback received...");
+            
+            //decode the json and put it in an object
+            var receivedJSON = JSON.decode(req.responseText);
+            
             //create the new html from the json's data
-            var CardURL = responseJSON.CardURL;
-            var DiceRoll1 = Number(responseJSON.DiceRoll1);
-            var DiceRoll2 = Number(responseJSON.DiceRoll2);
+            var CardURL = receivedJSON.CardURL;
+            var DiceRoll1 = receivedJSON.DiceRoll1;
+            var DiceRoll2 = receivedJSON.DiceRoll2;
             
             //display a new card
             //$('NewCard').src = CardURL;
 
             //update the dice
-            setDice(DiceRoll1,DiceRoll2);
-            // temp (3/23)
-            alert(DiceRoll1+DiceRoll2);
-            takeTurnWithDice(DiceRoll1+DiceRoll2);
+            setDice(DiceRoll1,DiceRoll2);            
 	    },
 	    onFailure: function(){
 	        alert("Error communicating with server.");
@@ -166,10 +187,10 @@ function getCard()
 	// Create JSON object
     var objJSON = createBaseJSONObj();
     // Send Request
-	jsonRequest.get({
+	jsonRequest.send({
 		'action' : 'GetCard',
 		'content' : JSON.encode(objJSON)
-	});
+	});    
 }
 
 //sends a request to the server to use a card
@@ -178,9 +199,15 @@ function playTurn()
 	// Create Request
 	var jsonRequest = new Request.JSON({
 	    url: '/bullygame/game',
-	    onSuccess: function(responseJSON){
+	    method: 'get',
+	    onSuccess: function(responseText){
+            console.log("useCard callback received...");
+            
+            //decode the json and put it in an object
+            var receivedJSON = JSON.decode(req.responseText);
+            
             //create the new html from the json's data
-            var Status = responseJSON.Status;
+            var Status = receivedJSON.Status
             
             //display a new card
             if (Status=="Valid") {
@@ -207,7 +234,7 @@ function playTurn()
     };
     
     // Send Request
-	jsonRequest.get({
+	jsonRequest.send({
 		'action' : 'playTurn',
 		'content' : JSON.encode(objJSON)
 	});
@@ -219,18 +246,24 @@ function checkState()
 	// Create Request
 	var jsonRequest = new Request.JSON({
 	    url: '/bullygame/game',
-	    onSuccess: function(responseJSON){
+	    method: 'get',
+	    onSuccess: function(responseText){
+	    	console.log("game state check callback received...");
+            
+            //decode the json and put it in an object
+            var receivedJSON = JSON.decode(req.responseText);
+            
             //create the new html from the json's data
-            var Status = responseJSON.Status;
+            var Status = receivedJSON.Status;
             
             //update the turn
             var TurnNumber = document.getElementById("turn");
-            TurnNumber.innerHTML = responseJSON.TurnNumber;
+            TurnNumber.innerHTML = receivedJSON.TurnNumber;
             
             //check to see if something was changed
             if (Status=="State Changed") {
             	alert("There has been a change")
-            }
+        	}	    
 	    },
 	    onFailure: function(){
 	        alert("Error communicating with server.");
@@ -239,7 +272,7 @@ function checkState()
 	// Create JSON object
     var objJSON = createBaseJSONObj();
     // Send Request
-	jsonRequest.get({
+	jsonRequest.send({
 		'action' : 'CheckState',
 		'content' : JSON.encode(objJSON)
 	}); 
