@@ -147,15 +147,16 @@ function getCard()
 	    onSuccess: function(responseJSON){
             //create the new html from the json's data
             var CardURL = responseJSON.CardURL;
-            var DiceRoll1 = responseJSON.DiceRoll1;
-            var DiceRoll2 = responseJSON.DiceRoll2;
+            var DiceRoll1 = Number(responseJSON.DiceRoll1);
+            var DiceRoll2 = Number(responseJSON.DiceRoll2);
             
             //display a new card
             //$('NewCard').src = CardURL;
 
             //update the dice
             setDice(DiceRoll1,DiceRoll2);
-            // temp (3-23)           
+            // temp (3/23)
+            alert(DiceRoll1+DiceRoll2);
             takeTurnWithDice(DiceRoll1+DiceRoll2);
 	    },
 	    onFailure: function(){
