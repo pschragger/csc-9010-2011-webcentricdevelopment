@@ -1,6 +1,5 @@
 <html>
 <head>
-	<script type="text/javascript" src="/js/lib/mootools-core-1.3.js"></script>
     <script type="text/javascript" src="/js/lib/mcl-min.js"></script>
 	<script type="text/javascript" src="/js/dice.js"></script>
 	<script type="text/javascript" src="/js/square.js"></script>  

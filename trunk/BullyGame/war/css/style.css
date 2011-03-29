@@ -120,3 +120,36 @@ a, a:visited, a:active {
 a:hover {
 	color: #000000;
 }
+
+h2 {
+	font-size: 14px;
+	text-align: left;
+	font-weight: bold;
+	font-family: tf2Bold;
+	border-bottom: 1px solid black;
+	padding: 10px 0 0px 5px;
+	margin-bottom: 5px;
+}
+
+#friendsList {
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+	#friendsList .friend {
+		border: 1px solid #B3C2FF;
+		border-bottom: none;
+		padding: 3px 5px;
+		position: relative;
+	}
+	
+	#friendsList .friend:last-child {
+		border: 1px solid #B3C2FF;
+	}
+	
+		#friendsList .friend a {
+			display: block;
+			position: absolute;
+			right: 1px;
+			top: 1px;
+		}

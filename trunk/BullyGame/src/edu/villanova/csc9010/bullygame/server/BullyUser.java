@@ -1,5 +1,6 @@
 package edu.villanova.csc9010.bullygame.server;
 
+import java.util.*;
 import com.google.appengine.api.users.*;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
@@ -28,9 +29,13 @@ public class BullyUser {
     @Persistent
     private String name;
     
-    public BullyUser(User user) {
+    @Persistent
+    private String email;
+
+	public BullyUser(User user) {
     	this.user = user;
     	this.name = user.getNickname();
+    	this.email = user.getEmail();
     	this.userId = user.getUserId();
     }
 
@@ -46,6 +51,16 @@ public class BullyUser {
 		
 		if(user == null) return null;
 		
+		BullyUser bullyUser = getBullyUser(user);
+		if(bullyUser != null) return bullyUser;
+		
+		bullyUser = new BullyUser(user);
+		PMF.get().getPersistenceManager().makePersistent(bullyUser);
+			
+		return bullyUser;
+	}
+	
+	public static BullyUser getBullyUser(User user) {
 		try {
 		    Query query = PMF.get().getPersistenceManager().newQuery(BullyUser.class);
 		    query.setFilter("userId == userParam");
@@ -58,10 +73,38 @@ public class BullyUser {
 			e.printStackTrace();
 		}
 		
-		BullyUser bullyUser = new BullyUser(user);
-		PMF.get().getPersistenceManager().makePersistent(bullyUser);
+		return null;
+	}
+	
+	public static BullyUser findByEmail(String email) {
+		try {
+		    Query query = PMF.get().getPersistenceManager().newQuery(BullyUser.class);
+		    query.setFilter("email == emailParam");
+		    query.declareParameters("String emailParam");
+			List<BullyUser> results = (List<BullyUser>) query.execute(email);
+			
+			if(results.size() > 0) return results.get(0);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		
-		return bullyUser;
+		return null;
+	}
+	
+	public List<Friend> friends() {
+		try {
+		    Query query = PMF.get().getPersistenceManager().newQuery(Friend.class);
+		    query.setFilter("userId == userParam");
+		    query.declareParameters("long userParam");
+			List<Friend> results = (List<Friend>) query.execute(id);
+			
+			return results;
+		} catch(Exception e) {
+			// If the table does not exist, the read will fail so we need to make the user
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public static long playerCount() {
@@ -115,5 +158,13 @@ public class BullyUser {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+    
+    public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }
