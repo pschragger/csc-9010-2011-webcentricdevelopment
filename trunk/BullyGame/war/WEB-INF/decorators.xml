@@ -3,7 +3,7 @@
     <pattern>/jsp/game/*</pattern>
   </decorator>
   <decorator name="siteLayout" page="/decorators/main.jsp">
-    <pattern>/jsp/*</pattern>
+    <pattern>/jsp/main/*</pattern>
     <pattern>/</pattern>
   </decorator>
 </decorators>
