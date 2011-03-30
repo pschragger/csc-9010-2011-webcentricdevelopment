@@ -25,7 +25,7 @@ public class GamePlayer {
 	private long gameID;
 	
 	@Persistent
-	private String user;
+	private long user;
 	
 	@Persistent
 	private int color;
@@ -39,7 +39,7 @@ public class GamePlayer {
 	 * @param u Email of the user
 	 * @param c Color of the player's pawn. This will determine order. 
 	 */
-	public GamePlayer(long gameID, String user, int color, int status)
+	public GamePlayer(long gameID, long user, int color, int status)
 	{
 		this.gameID = gameID;
 		this.user = user;
@@ -58,7 +58,7 @@ public class GamePlayer {
 		return gameID;
 	}
 	
-	public String getUser()
+	public long getUser()
 	{
 		return user;
 	}
@@ -84,7 +84,7 @@ public class GamePlayer {
 		this.status = status;
 	}
 	
-	public void setUser(String user)
+	public void setUser(long user)
 	{
 		this.user = user;
 	}

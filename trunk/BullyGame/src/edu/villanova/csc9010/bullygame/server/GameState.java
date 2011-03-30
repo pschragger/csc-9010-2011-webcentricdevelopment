@@ -2,6 +2,9 @@ package edu.villanova.csc9010.bullygame.server;
 
 import com.google.appengine.api.datastore.Key;
 import java.util.Date;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -19,13 +22,13 @@ public class GameState {
 	private Date startDate;
 	
 	@Persistent
-	private String currentPlayer;
+	private long currentPlayer;
 	
 	@Persistent
 	private boolean active;
 	
 	@Persistent
-	private String winner;
+	private long winner;
 	
 	@Persistent
 	private Date endDate;
@@ -36,8 +39,8 @@ public class GameState {
 	public GameState()
 	{
 		this.startDate = new Date();
-		this.currentPlayer = null;
-		this.winner = null;
+		this.currentPlayer = 0;
+		this.winner = 0;
 		this.endDate = null;
 		this.active = true;
 		
@@ -52,7 +55,7 @@ public class GameState {
 	 * @param ed the end date
 	 * @param a true if active, false if not
 	 */
-	public GameState(Key key, Date s, String cp, String w, Date ed, boolean a)
+	public GameState(Key key, Date s, long cp, long w, Date ed, boolean a)
 	{
 		this.key = key;
 		this.startDate = s;
@@ -75,7 +78,7 @@ public class GameState {
 		return startDate;
 	}
 	
-	public String getCurrentPlayer()
+	public long getCurrentPlayer()
 	{
 		return currentPlayer;
 	}
@@ -85,7 +88,7 @@ public class GameState {
 		return active;
 	}
 	
-	public String getWinner()
+	public long getWinner()
 	{
 		return winner;
 	}
@@ -101,7 +104,7 @@ public class GameState {
 		startDate = st;
 	}
 	
-	private void setCurrentPlayer(String cp)
+	private void setCurrentPlayer(long cp)
 	{
 		currentPlayer = cp;
 	}
@@ -111,7 +114,7 @@ public class GameState {
 		active = a;
 	}
 	
-	public void setWinner(String w)
+	public void setWinner(long w)
 	{
 		winner = w;
 	}
@@ -119,6 +122,17 @@ public class GameState {
 	public void setEndDate(Date ed)
 	{
 		endDate = ed;
+	}
+	
+	public int getNumPlayers()
+	{
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String query;
+		query = "select from "+GamePlayer.class.getName()+" where user = "+this.key.getId();
+		
+		List<GamePlayer> gp = (List<GamePlayer>) pm.newQuery(query);
+		
+		return gp.size();
 	}
 
 }
