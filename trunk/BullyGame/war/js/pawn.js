@@ -31,7 +31,7 @@ function createPawn(x, y, radius, color, index)
 			}
 		},
 		colorIndex : function() {
-			return colors.indexOf(this.color);
+			return COLORS.indexOf(this.color);
 		}
 	});
 	return pawn;
