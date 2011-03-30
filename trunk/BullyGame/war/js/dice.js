@@ -27,15 +27,14 @@ function createDie(dId, nVal, xPos, yPos, angle) {
 		y : yPos,
 		w : DIE_LENGTH,
 		h : DIE_LENGTH,
-		t : Math.random()*Math.PI/2,
+		t : Math.random()*Math.PI/4,
 		fillStyle : 'rgba(255,255,255,1)',  // white
 		strokeStyle : 'rgba(0,0,0,1)',		// black
 		events : {
 			onDraw : function( ctx ) {
 				ctx.save();
 				ctx.translate(this.x,this.y);
-				ctx.rotate(this.t);
-				
+				ctx.rotate(this.t);				
 								
 				ctx.fillStyle = this.fillStyle;
 				ctx.strokeStyle = this.strokeStyle;								
@@ -84,11 +83,15 @@ function drawDiceRoll(d1,d2) {
 
 function setDice(v1,v2) {
 	// Get Random positions
-	var p1x = Math.floor(Math.random()*(250-DIE_LENGTH));
-	var p1y = Math.floor(Math.random()*(100-DIE_LENGTH));
+	var XMIN = DIE_LENGTH;
+	var XMAX = 250-DIE_LENGTH;
+	var YMIN = 0;
+	var YMAX = 100-DIE_LENGTH;
+	var p1x = XMIN + Math.floor(Math.random()*(XMAX-XMIN));
+	var p1y = YMIN + Math.floor(Math.random()*(YMAX-YMIN));
 	do {
-	   	var p2x = Math.floor(Math.random()*(250-DIE_LENGTH));
-		var p2y = Math.floor(Math.random()*(100-DIE_LENGTH));   			
+		var p2x = XMIN + Math.floor(Math.random()*(XMAX-XMIN));
+		var p2y = YMIN + Math.floor(Math.random()*(YMAX-YMIN));
 	} while (Math.abs(p2x-p1x) <= (DIE_LENGTH*1.4) && Math.abs(p2y-p1y)<=(DIE_LENGTH*1.4));   			
 	var d1 = createDie('d1', v1, p1x,p1y, 30);
 	var d2 = createDie('d2', v2, p2x,p2y, 0);
