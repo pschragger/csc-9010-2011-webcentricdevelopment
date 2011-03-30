@@ -9,8 +9,8 @@ function sendData(DisplayID, DataID) {
             console.log("new html = " + newHtml);
             
             //get the div id of a html element, and update its contents
-            var MyDiv = document.getElementById(responseJSON.DivId);
-            MyDiv.innerHTML=newHtml;
+            var MyDiv = $(responseJSON.DivId);
+            myDiv.set('html',newHtml);
 	    },
 	    onFailure: function(){
 	        alert("Error communicating with server.");
@@ -156,7 +156,6 @@ function getCard()
             //update the dice
             setDice(DiceRoll1,DiceRoll2);
             // temp (3/23)
-            alert(DiceRoll1+DiceRoll2);
             takeTurnWithDice(DiceRoll1+DiceRoll2);
 	    },
 	    onFailure: function(){
