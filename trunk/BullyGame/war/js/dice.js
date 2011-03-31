@@ -70,8 +70,11 @@ function createDie(dId, nVal, xPos, yPos, angle) {
 	return item;
 }
 
-function drawDiceRoll(d1,d2) {	
-	CANVAS.init({ canvasElement : 'diceCanvas' });
+function drawDiceRoll(d1,d2) {
+	CANVAS.init({
+		canvasElement : 'diceCanvas',
+		enableMouse : true
+	});
 	CANVAS.clear();
 	var layer = CANVAS.layers.add( new Layer({
 		id : 'diceLayer'
