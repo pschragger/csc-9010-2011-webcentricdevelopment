@@ -33,6 +33,19 @@ public class GameState {
 	@Persistent
 	private Date endDate;
 	
+	@Persistent
+	private Integer TurnNumber;
+	
+	@Persistent
+	private Integer PlayersJoined;
+	
+	@Persistent
+	private Integer Die1;
+	
+	@Persistent
+	private Integer Die2;
+	
+	
 	/**
 	 * Creates a new game with a unique key, the current date, and sets active as true. All other fields are null 
 	 */
@@ -43,7 +56,10 @@ public class GameState {
 		this.winner = 0;
 		this.endDate = null;
 		this.active = true;
-		
+		this.TurnNumber = 0;
+		this.PlayersJoined = 0;
+		this.Die1 = 0;
+		this.Die2 = 0;
 	}
 
 	/**
@@ -98,13 +114,34 @@ public class GameState {
 		return endDate;
 	}
 	
+	public Integer getNumberPlayersJoined()
+	{
+		return PlayersJoined;
+	}
+	
+	public Integer getTurnNumber()
+	{
+		return TurnNumber;
+	}
+	
+	public Integer getDie2()
+	{
+		return Die2;
+	}
+	
+	public Integer getDie1()
+	{
+		return Die1;
+	}
+	
+	
 	//setters
 	private void setStartDate(Date st)
 	{
 		startDate = st;
 	}
 	
-	private void setCurrentPlayer(long cp)
+	public void setCurrentPlayer(long cp)
 	{
 		currentPlayer = cp;
 	}
@@ -134,5 +171,20 @@ public class GameState {
 		
 		return gp.size();
 	}
+	
+	public void setTurnNumber(Integer tn)
+	{
+		TurnNumber = tn;
+	}
 
+	public void setNumberPlayers(Integer np)
+	{
+		PlayersJoined = np;
+	}
+
+	public void setDice(Integer DieOne, Integer DieTwo)
+	{
+		Die1 = DieOne;
+		Die2 = DieTwo;
+	}
 }
