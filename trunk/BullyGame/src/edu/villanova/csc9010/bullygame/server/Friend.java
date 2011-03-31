@@ -14,7 +14,7 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-@PersistenceCapable
+@PersistenceCapable(detachable="true")
 public class Friend {
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -55,8 +55,10 @@ public class Friend {
 	}
 	
 	public BullyUser getFriend() {
+
+	    PersistenceManager pmf = PMF.get().getPersistenceManager();
 		try {
-		    Query query = PMF.get().getPersistenceManager().newQuery(BullyUser.class);
+		    Query query = pmf.newQuery(BullyUser.class);
 		    query.setFilter("id == userParam");
 		    query.declareParameters("long userParam");
 			List<BullyUser> results = (List<BullyUser>) query.execute(friendId);
@@ -65,6 +67,8 @@ public class Friend {
 		} catch(Exception e) {
 			// If the table does not exist, the read will fail so we need to make the user
 			e.printStackTrace();
+		} finally {
+		    pmf.close();
 		}
 		
 		return null;
@@ -72,14 +76,18 @@ public class Friend {
 	
 	public static void delete(BullyUser user, long friendId) {
 		long userId = user.getId();
-		
+
+
+	    PersistenceManager pmf = PMF.get().getPersistenceManager();
 		try {
-		    Query query = PMF.get().getPersistenceManager().newQuery(Friend.class);
+		    Query query = pmf.newQuery(Friend.class);
 		    query.setFilter("userId == "+userId+" && friendId == "+friendId);
 			query.deletePersistentAll();
 		} catch(Exception e) {
 			// If the table does not exist, the read will fail so we need to make the user
 			e.printStackTrace();
+		} finally {
+		    pmf.close();
 		}
 	}
 }
