@@ -1,11 +1,18 @@
 // Red will be 0, yellow will be 1, green 2, and blue 3.
 // So the 50th square on the green path, for example, would be
 // paths[2][49]
+// Player Colors
 var RED = 0;
 var YELLOW = 1;
 var GREEN = 2;
 var BLUE = 3;
-var COLORS = ['rgb(255,0,0)','rgb(255,255,0)','rgb(0,255,0)','rgb(0,0,255)'];
+// Other Colors
+var WHITE = 4;
+var BLACK = 5;
+var STEELBLUE = 6;
+var SKYBLUE = 7;
+var COLORS = ['rgb(255,0,0)','rgb(255,255,0)','rgb(0,255,0)','rgb(0,0,255)',
+              'rgb(255,255,255)','rgb(0,0,0)','rgb(70,140,180)','rgb(135,206,235)'];
 
 var PAWN_ONE = 0;
 var PAWN_TWO = 1;
@@ -34,7 +41,7 @@ var size = 35;
 var spaces = 17;
 var square_size = size*spaces;
 var mid = (spaces-1) / 2;
-var pawn_size = size*0.35;
+var pawn_radius = size*0.35;
 
 var colorToMove = RED;
 var pawnToMove = PAWN_ONE;
@@ -61,23 +68,33 @@ home_positions[YELLOW] = [NUM_PAWNS];
 home_positions[GREEN] = [NUM_PAWNS];
 home_positions[BLUE] = [NUM_PAWNS];
 
-var gameOver = false;
-
-var Game = {
-//	boardCtx: null,
-//	pawnCtx: null,
-	movesLeft: 0
+var GameState = {
+	turnIndex : RED,		// Must be kept up to date
+	myColorIndex : RED,
+	movesLeft : 0,
+	selectedPawn : null,
+	gameOver : false,
+	myTurn : function(){ return (this.turnIndex == this.myColorIndex); },
+	pawns : []
 };
 
 function setUpBoard()
 {
-	CANVAS.init({ canvasElement : 'boardCanvas' });
+	CANVAS.init({ 
+		canvasElement : 'boardCanvas',
+		enableMouse : true
+	});
 	CANVAS.clear();
-	CANVAS.layers.add( new Layer({
+	var boardLayer = CANVAS.layers.add( new Layer({
 		id : 'boardLayer'
-	})); 
+	}));
+    // Create Pawns
+	var pawnLayer = CANVAS.layers.add( new Layer({
+		id : 'pawnLayer'
+	}));
+	
 	var ctx = $('boardCanvas').getContext("2d");	
-    ctx.strokeStyle = "rgb(0,0,0)";
+    ctx.strokeStyle = COLORS[BLACK];
 
     var squares = [64];
     var count = 0;
@@ -90,32 +107,32 @@ function setUpBoard()
     // Top row
     for(var c = 0; c < spaces; c++)
     {
-      squares[count] = createSquare(c*size, 0, size, "rgb(128,153,184)");
-      squares[count].draw();
+      squares[count] = createSquare(c*size, 0, size, String(count), COLORS[STEELBLUE]);
+      boardLayer.add(squares[count]);
       count++;
     }
 
     // Right column
     for(var c = 1; c < spaces-1; c++)
     {
-      squares[count] = createSquare(square_size-size, c*size, size, "rgb(128,153,184)");
-      squares[count].draw();
+      squares[count] = createSquare(square_size-size, c*size, size, String(count), COLORS[STEELBLUE]);
+      boardLayer.add(squares[count]);
       count++;
     }
     
     // Bottom row
     for(var c = spaces-1; c > -1; c--)
     {
-      squares[count] = createSquare(c*size, square_size-size, size, "rgb(128,153,184)");
-      squares[count].draw();
+      squares[count] = createSquare(c*size, square_size-size, size, String(count), COLORS[STEELBLUE]);
+      boardLayer.add(squares[count]);
       count++;
     }
     
     // Left column
     for(var c = spaces-2; c > 0; c--)
     {
-      squares[count] = createSquare(0, c*size, size, "rgb(128,153,184)");
-      squares[count].draw();
+      squares[count] = createSquare(0, c*size, size, String(count), COLORS[STEELBLUE]);
+      boardLayer.add(squares[count]);
       count++;
     }
     
@@ -183,24 +200,24 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[RED][rcount] = createSquare(square_size-((c+1)*size), mid*size, size, COLORS[RED]);
-      paths[RED][rcount].draw();
+      paths[RED][rcount] = createSquare(square_size-((c+1)*size), mid*size, size, 'red-path-'+c, COLORS[RED]);
+      boardLayer.add(paths[RED][rcount]);
       rcount++;
     }
     
-    // Start area
-    paths[RED][0] = createSquare(square_size-(4.25*size),(mid+2)*size,size*3,COLORS[RED]);
-    paths[RED][0].draw();
+    // Red Start area
+    paths[RED][0] = createSquare(square_size-(4.25*size),(mid+2)*size,size*3,'red-start', COLORS[RED]);
+    boardLayer.add(paths[RED][0]);
     
     // Pawns
     pawns[RED][PAWN_ONE] = createPawn(start_positions[RED][PAWN_ONE].x,
     								start_positions[RED][PAWN_ONE].y,
-    								pawn_size,COLORS[RED],0,PAWN_ONE);
-    pawns[RED][PAWN_ONE].draw();                   
+    								pawn_radius,RED,PAWN_ONE);                
     pawns[RED][PAWN_TWO] = createPawn(start_positions[RED][PAWN_TWO].x,
 									start_positions[RED][PAWN_TWO].y,
-									pawn_size,COLORS[RED],0,PAWN_TWO);
-    pawns[RED][PAWN_TWO].draw();
+									pawn_radius,RED,PAWN_TWO);
+    pawnLayer.add(pawns[RED][PAWN_ONE]);
+    pawnLayer.add(pawns[RED][PAWN_TWO]);
     paths[RED][0].addPawn(pawns[RED][PAWN_ONE]);
     paths[RED][0].addPawn(pawns[RED][PAWN_TWO]);
     
@@ -208,24 +225,24 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[YELLOW][ycount] = createSquare(c*size, mid*size, size, COLORS[YELLOW]);
-      paths[YELLOW][ycount].draw();
+      paths[YELLOW][ycount] = createSquare(c*size, mid*size, size, 'yellow-path-'+c, COLORS[YELLOW]);
+      boardLayer.add(paths[YELLOW][ycount]);
       ycount++;
     }
     
     // Start area
-    paths[YELLOW][0] = createSquare(1.25*size,(mid-4)*size,size*3,COLORS[YELLOW]);
-    paths[YELLOW][0].draw();
+    paths[YELLOW][0] = createSquare(1.25*size,(mid-4)*size,size*3,'yellow-start', COLORS[YELLOW]);
+    boardLayer.add(paths[YELLOW][0]);
     
     // Pawns
     pawns[YELLOW][PAWN_ONE] = createPawn(start_positions[YELLOW][PAWN_ONE].x,
 										start_positions[YELLOW][PAWN_ONE].y,
-										pawn_size,COLORS[YELLOW],0,PAWN_ONE);
-	pawns[YELLOW][PAWN_ONE].draw();                   
+										pawn_radius,YELLOW,PAWN_ONE);                  
 	pawns[YELLOW][PAWN_TWO] = createPawn(start_positions[YELLOW][PAWN_TWO].x,
 										start_positions[YELLOW][PAWN_TWO].y,
-										pawn_size,COLORS[YELLOW],0,PAWN_TWO);
-	pawns[YELLOW][PAWN_TWO].draw();    
+										pawn_radius,YELLOW,PAWN_TWO);
+    pawnLayer.add(pawns[YELLOW][PAWN_ONE]);
+    pawnLayer.add(pawns[YELLOW][PAWN_TWO]);
     paths[YELLOW][0].addPawn(pawns[YELLOW][PAWN_ONE]);
     paths[YELLOW][0].addPawn(pawns[YELLOW][PAWN_TWO]);
     
@@ -233,24 +250,24 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[GREEN][gcount] = createSquare(mid*size, square_size-((c+1)*size), size, COLORS[GREEN]);
-      paths[GREEN][gcount].draw();
+      paths[GREEN][gcount] = createSquare(mid*size, square_size-((c+1)*size), size, 'green-path-'+c, COLORS[GREEN]);
+      boardLayer.add(paths[GREEN][gcount]);
       gcount++;
     }
     
-    // Start area
-    paths[GREEN][0] = createSquare((mid-4)*size,square_size-(4.25*size),size*3,COLORS[GREEN]);
-    paths[GREEN][0].draw();
+    // Green Start area
+    paths[GREEN][0] = createSquare((mid-4)*size,square_size-(4.25*size),size*3,'green-start',COLORS[GREEN]);
+    boardLayer.add(paths[GREEN][0]);
     
     // Pawns
     pawns[GREEN][PAWN_ONE] = createPawn(start_positions[GREEN][PAWN_ONE].x,
 										start_positions[GREEN][PAWN_ONE].y,
-										pawn_size,COLORS[GREEN],0,PAWN_ONE);
-    pawns[GREEN][PAWN_ONE].draw();
+										pawn_radius,GREEN,PAWN_ONE);
     pawns[GREEN][PAWN_TWO] = createPawn(start_positions[GREEN][PAWN_TWO].x,
 										start_positions[GREEN][PAWN_TWO].y,
-										pawn_size,COLORS[GREEN],0,PAWN_TWO);
-    pawns[GREEN][PAWN_TWO].draw();
+										pawn_radius,GREEN,PAWN_TWO);
+    pawnLayer.add(pawns[GREEN][PAWN_ONE]);
+    pawnLayer.add(pawns[GREEN][PAWN_TWO]);
     paths[GREEN][0].addPawn(pawns[GREEN][PAWN_ONE]);
     paths[GREEN][0].addPawn(pawns[GREEN][PAWN_TWO]);
     
@@ -258,47 +275,59 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[BLUE][bcount] = createSquare(mid*size, c*size, size, COLORS[BLUE]);
-      paths[BLUE][bcount].draw();
+      paths[BLUE][bcount] = createSquare(mid*size, c*size, size, 'blue-path-'+c, COLORS[BLUE]);
+      boardLayer.add(paths[BLUE][bcount]);
       bcount++;
     }
     
-    // Start area
-    paths[BLUE][0] = createSquare((mid+2)*size,(1.25*size),size*3,COLORS[BLUE]);
-    paths[BLUE][0].draw();
-    
-    // Create Pawns
-	CANVAS.layers.add( new Layer({
-		id : 'pawnLayer'
-	}));	
+    // Blue Start area
+    paths[BLUE][0] = createSquare((mid+2)*size,(1.25*size),size*3,'blue-start',COLORS[BLUE]);
+    boardLayer.add(paths[BLUE][0]);
 	
     pawns[BLUE][PAWN_ONE] = createPawn(start_positions[BLUE][PAWN_ONE].x,
 										start_positions[BLUE][PAWN_ONE].y,
-										pawn_size,COLORS[BLUE],0,PAWN_ONE);
-    pawns[BLUE][PAWN_ONE].draw();
+										pawn_radius,BLUE,PAWN_ONE);    
     pawns[BLUE][PAWN_TWO] = createPawn(start_positions[BLUE][PAWN_TWO].x,
 									start_positions[BLUE][PAWN_TWO].y,
-									pawn_size,COLORS[BLUE],0,PAWN_TWO);
-    pawns[BLUE][PAWN_TWO].draw();
-    paths[BLUE][0].addPawn(pawns[3][PAWN_ONE]);
-    paths[BLUE][0].addPawn(pawns[3][PAWN_TWO]);
+									pawn_radius,BLUE,PAWN_TWO);
+    pawnLayer.add(pawns[BLUE][PAWN_ONE]);
+    pawnLayer.add(pawns[BLUE][PAWN_TWO]);
+    paths[BLUE][0].addPawn(pawns[BLUE][PAWN_ONE]);
+    paths[BLUE][0].addPawn(pawns[BLUE][PAWN_TWO]);
     
     // Draw the home area
-    ctx.beginPath();
-    ctx.fillStyle = "rgb(83,184,212)";
-    ctx.arc((mid*size)+(size/2),(mid*size)+(size/2),size*2.5,0,Math.PI*2,true);
-    ctx.fill();
-    ctx.stroke();
+    var homeArea = new CanvasItem({
+		id : 'home',
+		x : (mid*size)+(size/2),
+		y : (mid*size)+(size/2),
+		r : size*2.5,
+		fillStyle : COLORS[SKYBLUE],
+		strokeStyle : COLORS[BLACK],
+		events : {
+			onDraw : function( ctx ) {		
+				ctx.beginPath();
+				ctx.fillStyle = this.fillStyle;
+				ctx.arc(this.x,this.y,this.r,0,Math.PI*2,true);
+				ctx.fill();
+				ctx.stroke();
+				
+				ctx.fillStyle = COLORS[BLACK];
+				var fontSize = 25 * size/30;
+				ctx.font = fontSize+"pt Verdana";
+				ctx.fillText("HOME",(mid-1.2)*size,(mid+0.9)*size);
+			}
+		}
+    });
+    pawnLayer.add(homeArea);
     
-    ctx.fillStyle = "rgb(0,0,0)";
-    var fontSize = 25 * size/30;
-    ctx.font = fontSize+"pt Verdana";
-    ctx.fillText("HOME",(mid-1.2)*size,(mid+0.9)*size);
-    
-    paths[RED][rcount] = createSquare((mid*size)+(size/2),(mid*size)+(size/2),size*2.5, COLORS[RED]);
-    paths[YELLOW][ycount] = createSquare((mid*size)-(size*2),(mid*size)-(size*2),size*2.5, COLORS[YELLOW]);
-    paths[GREEN][gcount] = createSquare((mid*size)-(size*2),(mid*size)+(size/2),size*2.5, COLORS[GREEN]);
-    paths[BLUE][bcount] = createSquare((mid*size)+(size/2),(mid*size)-(size*2),size*2.5, COLORS[BLUE]);
+    paths[RED][rcount] = createSquare((mid*size)+(size/2),(mid*size)+(size/2),size*2.5,'red-home', COLORS[RED]);
+    paths[YELLOW][ycount] = createSquare((mid*size)-(size*2),(mid*size)-(size*2),size*2.5,'yellow-home', COLORS[YELLOW]);
+    paths[GREEN][gcount] = createSquare((mid*size)-(size*2),(mid*size)+(size/2),size*2.5,'green-home', COLORS[GREEN]);
+    paths[BLUE][bcount] = createSquare((mid*size)+(size/2),(mid*size)-(size*2),size*2.5,'blue-home', COLORS[BLUE]);
+    boardLayer.add(paths[RED][rcount]);
+    boardLayer.add(paths[YELLOW][ycount]);
+    boardLayer.add(paths[GREEN][gcount]);
+    boardLayer.add(paths[BLUE][bcount]);
 
     home_positions[RED][PAWN_ONE] = new Point(paths[RED][rcount].x+(size/2),
     											paths[RED][rcount].y+(size/2));
@@ -319,11 +348,16 @@ function setUpBoard()
     											(mid*size));
     home_positions[BLUE][PAWN_TWO] = new Point(paths[BLUE][bcount].x+(size/2)+(size*1.2),
 												(mid*size));
+
+    boardLayer.draw();
+    pawnLayer.draw();
+    console.log(boardLayer);
+//    CANVAS.draw();
 } // end setUpBoard()
 
 function takeTurnWithDice(roll)
 {
-	if(!gameOver)
+	if(!GameState.gameOver)
 	{
 		// Player's turn - TEMPORARY
 		if(colorToMove == 0)
@@ -382,7 +416,7 @@ function checkForGameOver(color)
 {
 	if(homes[color] == NUM_PAWNS)
 	{
-		gameOver = true;
+		GameState.gameOver = true;
     
 	    var msg;
 	    switch(color)
@@ -427,7 +461,7 @@ function movePawnToSpace(color, pawnIdx, sourceIndex, destIndex, newX, newY)
 	{
 		var curPawn = destSquare.pawns[0];
 		
-		var curPawnColor = curP.colorIndex();
+		var curPawnColor = curP.cIndex;
 		var curPawnIndex = 0;
 		
 		if(curPawnColor != color)

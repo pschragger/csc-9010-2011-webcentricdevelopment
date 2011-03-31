@@ -1,38 +1,50 @@
-function createPawn(x, y, radius, color, index)
+function createPawn(x, y, radius, cIndex, pIndex)
 {
 	var pawn = new CanvasItem({
-		id : 'pawn',
+		id : 'p-'+cIndex+'-'+pIndex,
 		x : x,
 		y : y,
 		r : radius,
-		h : size,
-		color : color,
-		index : index.
-		fillStyle : color,
-		strokeStyle : 'rgba(0,0,0,1)',		// black
-		pawns: [],
+		cIndex : cIndex,				// Color Index
+		pIndex : pIndex,				// Pawn Index
+		fillStyle : COLORS[cIndex],
+		strokeStyle : COLORS[BLACK],
+		location: null, 				// square element
 		events : {
 			onDraw : function( ctx ) {
-			  ctx.fillStyle = this.strokeStyle;
+			  ctx.strokeStyle = this.strokeStyle;
 		      ctx.fillStyle = this.fillStyle;
 		      ctx.beginPath();
-		      ctx.arc(this.x,this.y,this.radius,0,Math.PI*2,true);
+		      ctx.arc(this.x,this.y,this.r,0,Math.PI*2,true);
 		      ctx.fill();
 		      ctx.stroke();
 			},
-			mouseover : function(x,y){
-//				this.strokeStyle = 'rgba(0,0,0,1)';				
-			},
-			mouseout : function(x,y){
-//				this.strokeStyle = 'rgba(0,0,0,0.5)';
-			},
-			click : function(x,y) {
-//				alert("This die has a value of " + this.val + ".");
-			}
+			onMouseover : function(){ this.fillStyle=COLORS[BLUE]; },
+			onMouseout : function(){ this.fillStyle=COLORS[this.cIndex]; },
+			onClick : function() {
+					alert(this.id + "clicked!");
+				if (GameState.myTurn() && this.cIndex == GameState.turnIndex) {
+					this.select();
+					//this.draw( $('boardCanvas').getContext("2d") );
+				}
+			}			
 		},
-		colorIndex : function() {
-			return COLORS.indexOf(this.color);
+		setLocation : function(square) {
+			if (this.location)
+				this.location.removePawn(this);
+			this.location = square;
+		},
+		select : function() {
+			if (GameState.selectedPawn)
+				GameState.selectedPawn.deSelect();
+			this.strokeStyle = (this.cIndex == YELLOW) ? COLORS[BLUE] : COLORS[YELLOW];
+				console.log("selecting " + this.cIndex+"-"+this.pIndex);
+			//this.draw( );
+		},
+		deSelect : function() {
+			this.strokeStyle = COLORS[BLACK];
 		}
 	});
+	GameState.pawns[pawn.id] = pawn;
 	return pawn;
 }
