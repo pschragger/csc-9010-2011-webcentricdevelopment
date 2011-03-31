@@ -73,14 +73,14 @@ function sendData(DisplayID, DataID)
     	//make sure ready state = 4 and status = 200 (OK)
     	if ((req.readyState==4) &&(req.status==200))
         {
-            console.log("callback received...");
+            //console.log("callback received...");
             
             //decode the json and put it in an object
             var receivedJSON = JSON.decode(req.responseText);
             
             //create the new html from the json's data
             var newHtml = "<p>" + receivedJSON.Data + "</p>";
-            console.log("new html = " + newHtml);
+            //console.log("new html = " + newHtml);
             
             //get the div id of a html element, and update its contents
             var MyDiv = document.getElementById(receivedJSON.DivId);
@@ -137,7 +137,7 @@ function getGameInfo()
     	//make sure ready state = 4 and status = 200 (OK)
     	if ((req.readyState==4) &&(req.status==200))
         {
-            console.log("cookies received...");
+            //console.log("cookies received...");
             
             //decode the json and put it in an object
             var receivedJSON = JSON.decode(req.responseText);
@@ -188,7 +188,7 @@ function joinGame()
         	//make sure ready state = 4 and status = 200 (OK)
         	if ((req.readyState==4) &&(req.status==200))
             {
-                console.log("cookies received...");
+                //console.log("cookies received...");
                 
                 //decode the json and put it in an object
                 var receivedJSON = JSON.decode(req.responseText);
@@ -218,13 +218,13 @@ function joinGame()
     	function callServlet()
         {
     	  //get the player's username from the query string	
-    	  console.log("fetch username");
+    	  //console.log("fetch username");
     	  var username = gup("username");
     	  if (username==null)
 		  {
     		  username = "anonymous";
 		  }
-    	  console.log("username = " + username);
+    	  //console.log("username = " + username);
     	  var GameID = Cookie.read("GameID");
     	  if (GameID==null)
 		  {
@@ -286,7 +286,7 @@ function getCard()
 			//make sure ready state = 4 and status = 200 (OK)
 			if ((req.readyState==4) &&(req.status==200))
 			{
-			    console.log("callback received...");
+			    //console.log("callback received...");
 			    
 			    //decode the json and put it in an object
 			    var receivedJSON = JSON.decode(req.responseText);
@@ -357,7 +357,7 @@ function playTurn()
 	    	//make sure ready state = 4 and status = 200 (OK)
 	    	if ((req.readyState==4) &&(req.status==200))
 	        {
-	            console.log("useCard callback received...");
+	            //console.log("useCard callback received...");
 	            
 	            //decode the json and put it in an object
 	            var receivedJSON = JSON.decode(req.responseText);
@@ -409,7 +409,7 @@ function playTurn()
 	      };
 	
 	      var strJSON = JSON.encode(objJSON);
-	      console.log("JSON sent: " + strJSON);
+	      //console.log("JSON sent: " + strJSON);
 	      
 	      //create and send the http request
 	      var QueryString = "action=playTurn&content=" + strJSON;
@@ -438,7 +438,7 @@ function checkState()
     	//make sure ready state = 4 and status = 200 (OK)
     	if ((req.readyState==4) &&(req.status==200))
         {
-            console.log("game state check callback received...");
+            //console.log("game state check callback received...");
             
             //decode the json and put it in an object
             var receivedJSON = JSON.decode(req.responseText);
@@ -454,7 +454,7 @@ function checkState()
                 var TurnNumber = parseFloat(receivedJSON.TurnNumber);
                 if (TurnNumber!=Cookie.read("TurnNumber"))
             	{
-                	console.log("new turn number");
+                	//console.log("new turn number");
     	            Cookie.write("TurnNumber",TurnNumber);
                 	var TurnNumberDiv = document.getElementById("turn"); 
     	            TurnNumberDiv.innerHTML = TurnNumber;
@@ -471,17 +471,17 @@ function checkState()
                 
                 //check if its now your turn
                 var PlayerTurnID = parseFloat(Cookie.read("PlayerTurnID"));
-                console.log("player turn id: " + PlayerTurnID);
+                //console.log("player turn id: " + PlayerTurnID);
                 
-                console.log("overall turn number: " + TurnNumber);
+                //console.log("overall turn number: " + TurnNumber);
                 var CurrentTurn = TurnNumber % TotalPlayers;
-                console.log("current turn: " + CurrentTurn);
+                //console.log("current turn: " + CurrentTurn);
                 
                 
                 if ((CurrentTurn==PlayerTurnID) && (TotalPlayers>1))
             	{
                 	//it IS this player's turn
-                	console.log("My turn!!!");
+                	//console.log("My turn!!!");
                 	if (Cookie.read("MyTurn")=="No")
             		{
             			Cookie.write("MyTurn","Draw");
@@ -510,7 +510,7 @@ function checkState()
       };
 
       var strJSON = JSON.encode(objJSON);
-      console.log("JSON sent: " + strJSON);
+      //console.log("JSON sent: " + strJSON);
       
       //create and send the http request
       var QueryString = "action=CheckState&content=" + strJSON;
