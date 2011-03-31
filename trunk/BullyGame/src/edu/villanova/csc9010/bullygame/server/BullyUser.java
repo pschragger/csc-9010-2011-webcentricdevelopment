@@ -15,7 +15,7 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-@PersistenceCapable
+@PersistenceCapable(detachable="true")
 public class BullyUser {
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -31,6 +31,9 @@ public class BullyUser {
     
     @Persistent
     private String email;
+    
+    @Persistent
+    private long lastActive;
 
 	public BullyUser(User user) {
     	this.user = user;
@@ -38,8 +41,30 @@ public class BullyUser {
     	this.email = user.getEmail();
     	this.userId = user.getUserId();
     }
+	
+	public void markActive() {
+	    lastActive = System.currentTimeMillis();
+        PersistenceManager pmf = PMF.get().getPersistenceManager();
+	    try {
+	        pmf.makePersistent(this);
+	    } finally {
+	        pmf.close();
+	    }
+	}
+	
+	public boolean getIsActive() {
+	    return System.currentTimeMillis() - lastActive < 60*1000;
+	}
 
-	public static boolean isLoggedIn() {
+	public long getLastActive() {
+        return lastActive;
+    }
+
+    public void setLastActive(long lastActive) {
+        this.lastActive = lastActive;
+    }
+
+    public static boolean isLoggedIn() {
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		return user != null;
@@ -55,14 +80,20 @@ public class BullyUser {
 		if(bullyUser != null) return bullyUser;
 		
 		bullyUser = new BullyUser(user);
-		PMF.get().getPersistenceManager().makePersistent(bullyUser);
+        PersistenceManager pmf = PMF.get().getPersistenceManager();
+        try {
+            pmf.makePersistent(bullyUser);
+        } finally {
+            pmf.close();
+        }
 			
 		return bullyUser;
 	}
 	
 	public static BullyUser getBullyUser(User user) {
+	    PersistenceManager pmf = PMF.get().getPersistenceManager();
 		try {
-		    Query query = PMF.get().getPersistenceManager().newQuery(BullyUser.class);
+		    Query query = pmf.newQuery(BullyUser.class);
 		    query.setFilter("userId == userParam");
 		    query.declareParameters("String userParam");
 			List<BullyUser> results = (List<BullyUser>) query.execute(user.getUserId());
@@ -71,14 +102,18 @@ public class BullyUser {
 		} catch(Exception e) {
 			// If the table does not exist, the read will fail so we need to make the user
 			e.printStackTrace();
+		} finally {
+		    pmf.close();
 		}
 		
 		return null;
 	}
 	
 	public static BullyUser findByEmail(String email) {
+
+	    PersistenceManager pmf = PMF.get().getPersistenceManager();
 		try {
-		    Query query = PMF.get().getPersistenceManager().newQuery(BullyUser.class);
+		    Query query = pmf.newQuery(BullyUser.class);
 		    query.setFilter("email == emailParam");
 		    query.declareParameters("String emailParam");
 			List<BullyUser> results = (List<BullyUser>) query.execute(email);
@@ -86,22 +121,28 @@ public class BullyUser {
 			if(results.size() > 0) return results.get(0);
 		} catch(Exception e) {
 			e.printStackTrace();
+		} finally {
+		    pmf.close();
 		}
 		
 		return null;
 	}
 	
 	public List<Friend> friends() {
+
+	    PersistenceManager pmf = PMF.get().getPersistenceManager();
 		try {
-		    Query query = PMF.get().getPersistenceManager().newQuery(Friend.class);
+		    Query query = pmf.newQuery(Friend.class);
 		    query.setFilter("userId == userParam");
 		    query.declareParameters("long userParam");
 			List<Friend> results = (List<Friend>) query.execute(id);
 			
-			return results;
+			return (List<Friend>)pmf.detachCopyAll(results);
 		} catch(Exception e) {
 			// If the table does not exist, the read will fail so we need to make the user
 			e.printStackTrace();
+		} finally {
+		    pmf.close();
 		}
 		
 		return null;
