@@ -25,6 +25,9 @@ public class FriendsServlet extends HttpServlet {
 			    } finally {
 			        pmf.close();
 			    }
+				request.getSession().setAttribute("flash", "Your friend has been added.");
+			} else {
+				request.getSession().setAttribute("flash", "We could not find someone with that email address.");
 			}
 		}
 		response.sendRedirect(request.getHeader("Referer"));
@@ -33,6 +36,7 @@ public class FriendsServlet extends HttpServlet {
     public void removeFriend(HttpServletRequest request, HttpServletResponse response) throws IOException {
         long id = Long.valueOf(request.getParameter("id"));
         Friend.delete(BullyUser.loggedInUser(), id);
+        request.getSession().setAttribute("flash", "The friend has been removed.");
         response.sendRedirect(request.getHeader("Referer"));
     }
 

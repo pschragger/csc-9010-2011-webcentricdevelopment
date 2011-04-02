@@ -64,6 +64,16 @@
 		background-color: #EDF0FF;
 		padding: 0;
 	}
+	
+		#flash {
+			background-color: #E6FFEB;
+			border: 1px solid green;
+			margin: 0 0 10px 10%;
+			padding: 5px;
+			text-align: center;
+			width: 80%;		
+		}
+		
 		#stats {
 			float: left;
 			padding: 10px 5px;
@@ -142,7 +152,13 @@ h2 {
 		padding: 3px 5px;
 		position: relative;
 	}
+		#friendsList .friend.online {
+			color: #397837;		
+		}
 	
+		#friendsList .friend.away {
+			color: #8A2C2C;
+		}
 	#friendsList .friend:last-child {
 		border: 1px solid #B3C2FF;
 	}
