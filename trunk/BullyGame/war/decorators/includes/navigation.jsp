@@ -4,6 +4,6 @@
 		</div>
 		<ul id='nav'>
 			<li><a href='/'>Home</a></li>
-			<li><a href='/'>Another Link</a></li>
+			<li><a href='/jsp/game/list.jsp'>Join a Game</a></li>
 			<div class='clear'></div>
 		</ul>

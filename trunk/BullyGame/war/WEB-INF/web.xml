@@ -85,5 +85,32 @@
     <filter-name>sitemesh</filter-name>
     <url-pattern>/</url-pattern>
   </filter-mapping>
+  
+  <filter>
+  	<filter-name>FriendsFilter</filter-name>
+  	<filter-class>edu.villanova.csc9010.bullygame.server.FriendsFilter</filter-class>
+  </filter>
+  <filter-mapping>
+  	<filter-name>FriendsFilter</filter-name>
+  	<url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <filter>
+  	<filter-name>UserFilter</filter-name>
+  	<filter-class>edu.villanova.csc9010.bullygame.server.UserFilter</filter-class>
+  </filter>
+  <filter-mapping>
+  	<filter-name>UserFilter</filter-name>
+  	<url-pattern>/jsp/game/*</url-pattern>
+  </filter-mapping>
+  
+  <filter>
+  	<filter-name>FlashFilter</filter-name>
+  	<filter-class>edu.villanova.csc9010.bullygame.server.FlashFilter</filter-class>
+  </filter>
+  <filter-mapping>
+  	<filter-name>FlashFilter</filter-name>
+  	<url-pattern>/*</url-pattern>
+  </filter-mapping>
 
 </web-app>

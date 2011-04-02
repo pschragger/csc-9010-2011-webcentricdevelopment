@@ -1,4 +1,5 @@
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="edu.villanova.csc9010.bullygame.server.BullyUser" %>
 <% BullyUser user = BullyUser.loggedInUser(); %>
 
@@ -17,14 +18,18 @@
 		<div id='content'>
 			<div id='stats'>
 				<% if (user != null) { %>
-					Rank: <%= user.rank() %> of <%= BullyUser.playerCount() %> players.
-					<br />
+					<h2>Rank</h2>
+					<%= user.rank() %> of <%= BullyUser.playerCount() %> players.
+					<h2>Stats</h2>
 					Stats: <%= user.stats() %>
 				<% } else { %>
 					<a href='<%= BullyUser.loginUrl() %>'>sign in</a> to view stats
 				<% } %>
 			</div>
 			<div id='gameContent'>
+				<c:if test="${!empty flash}">
+					<div id='flash'>${flash}</div>
+				</c:if>
     			<decorator:body />
     		</div>
     		<div id='friends'>
