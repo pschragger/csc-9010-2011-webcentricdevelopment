@@ -9,7 +9,9 @@ function createPawn(x, y, radius, cIndex, pIndex)
 		pIndex : pIndex,				// Pawn Index
 		fillStyle : COLORS[cIndex],
 		strokeStyle : COLORS[BLACK],
+		selected : false,
 		location: null, 				// square element
+		interactive : true,
 		events : {
 			onDraw : function( ctx ) {
 			  ctx.strokeStyle = this.strokeStyle;
@@ -18,14 +20,18 @@ function createPawn(x, y, radius, cIndex, pIndex)
 		      ctx.arc(this.x,this.y,this.r,0,Math.PI*2,true);
 		      ctx.fill();
 		      ctx.stroke();
+//		      ctx.strokeRect(this.x-this.r,this.y-this.r,(this.r*2),(this.r*2));
+		      this.setDims(this.x-this.r,this.y-this.r,(this.r*2),(this.r*2));
 			},
-			onMouseover : function(){ this.fillStyle=COLORS[BLUE]; },
-			onMouseout : function(){ this.fillStyle=COLORS[this.cIndex]; },
+			onMouseover : function(e){ 				
+//				this.strokeStyle=COLORS[BLUE];
+			},
+			onMouseout : function(){ 
+//				this.fillStyle=COLORS[this.cIndex]; 
+			},
 			onClick : function() {
-					alert(this.id + "clicked!");
-				if (GameState.myTurn() && this.cIndex == GameState.turnIndex) {
+				if (GameState.myTurn() ){//}&& this.cIndex == GameState.turnIndex) {
 					this.select();
-					//this.draw( $('boardCanvas').getContext("2d") );
 				}
 			}			
 		},
@@ -35,14 +41,20 @@ function createPawn(x, y, radius, cIndex, pIndex)
 			this.location = square;
 		},
 		select : function() {
-			if (GameState.selectedPawn)
-				GameState.selectedPawn.deSelect();
-			this.strokeStyle = (this.cIndex == YELLOW) ? COLORS[BLUE] : COLORS[YELLOW];
-				console.log("selecting " + this.cIndex+"-"+this.pIndex);
-			//this.draw( );
+			if (this.selected) {
+				this.deselect();
+			} else {
+				if (GameState.selectedPawn)
+					GameState.selectedPawn.deselect();
+				GameState.selectedPawn = this;
+				this.selected = true;
+				this.strokeStyle = (this.cIndex == YELLOW) ? COLORS[RED] : COLORS[YELLOW];
+			}
 		},
-		deSelect : function() {
+		deselect : function() {
 			this.strokeStyle = COLORS[BLACK];
+			this.selected = false;
+			GameState.selectedPawn = null;
 		}
 	});
 	GameState.pawns[pawn.id] = pawn;

@@ -562,6 +562,5 @@ public class GameServlet  extends HttpServlet
         PrintWriter out = response.getWriter();
         out.printf(returnString);
         out.close();
-	}
-		
+	}		
 }
