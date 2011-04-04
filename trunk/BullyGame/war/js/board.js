@@ -84,17 +84,13 @@ function setUpBoard()
 		canvasElement : 'boardCanvas',
 		enableMouse : true
 	});
-	CANVAS.clear();
 	var boardLayer = CANVAS.layers.add( new Layer({
 		id : 'boardLayer'
 	}));
-    // Create Pawns
 	var pawnLayer = CANVAS.layers.add( new Layer({
 		id : 'pawnLayer'
 	}));
-	
-	var ctx = $('boardCanvas').getContext("2d");	
-    ctx.strokeStyle = COLORS[BLACK];
+//	var pawnLayer = boardLayer;
 
     var squares = [64];
     var count = 0;
@@ -107,33 +103,29 @@ function setUpBoard()
     // Top row
     for(var c = 0; c < spaces; c++)
     {
-      squares[count] = createSquare(c*size, 0, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(c*size, 0, size, String(count), COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
-      count++;
     }
 
     // Right column
     for(var c = 1; c < spaces-1; c++)
     {
-      squares[count] = createSquare(square_size-size, c*size, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(square_size-size, c*size, size, String(count), COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
-      count++;
     }
     
     // Bottom row
     for(var c = spaces-1; c > -1; c--)
     {
-      squares[count] = createSquare(c*size, square_size-size, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(c*size, square_size-size, size, String(count), COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
-      count++;
     }
     
     // Left column
     for(var c = spaces-2; c > 0; c--)
     {
-      squares[count] = createSquare(0, c*size, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(0, c*size, size, String(count), COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
-      count++;
     }
     
     // Set up the paths each color will take (with the exception of
@@ -314,7 +306,7 @@ function setUpBoard()
 				ctx.fillStyle = COLORS[BLACK];
 				var fontSize = 25 * size/30;
 				ctx.font = fontSize+"pt Verdana";
-				ctx.fillText("HOME",(mid-1.2)*size,(mid+0.9)*size);
+				ctx.fillText("HOME",(mid-1.7)*size,(mid+0.9)*size);
 			}
 		}
     });
@@ -349,10 +341,18 @@ function setUpBoard()
     home_positions[BLUE][PAWN_TWO] = new Point(paths[BLUE][bcount].x+(size/2)+(size*1.2),
 												(mid*size));
 
-    boardLayer.draw();
-    pawnLayer.draw();
-    console.log(boardLayer);
-//    CANVAS.draw();
+//    boardLayer.draw();
+//    pawnLayer.draw();
+    
+    
+    var myThread = CANVAS.addThread(new Thread({
+        id : 'myThread',
+        onExec : function(){
+            CANVAS.clear().draw();
+        }
+    }));
+    
+//    console.log(myThread);
 } // end setUpBoard()
 
 function takeTurnWithDice(roll)

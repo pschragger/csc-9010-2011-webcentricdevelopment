@@ -2,27 +2,32 @@ function createSquare(x, y, size, id, color)
 {
 	var square = new CanvasItem({
 		id : id,
-//		val: nVal,
 		x : x,
 		y : y,
 		w : size,
 		h : size,
 		color : color,
 		fillStyle : color,
-		strokeStyle : COLORS[BLACK],
+		strokeStyle : COLORS[BLACK],	
 		pawns: [],
+		interactive : true,
 		events : {
-			onDraw : function( ctx ) {
+			onDraw : function( ctx ) {				
+				//console.log(this.id+","this.fillstyle+","+this.color);
 				ctx.fillStyle = this.fillStyle;								
 			    ctx.strokeStyle = this.strokeStyle;
 			    ctx.fillRect(this.x, this.y, this.w, this.h);
 			    ctx.strokeRect(this.x, this.y, this.w, this.h);					
 				this.setDims(this.x,this.y,this.w,this.h);
 			},
-			onMouseover : function(){ this.fillStyle=COLORS[GREEN]; },
-			onMouseout : function(){ this.fillStyle=COLORS[STEELBlUE]; },
+			onMouseover : function(){ 
+//				this.fillStyle=COLORS[GREEN]; 
+			},
+			onMouseout : function(){ 
+//				this.fillStyle=COLORS[STEELBLUE]; 
+			},
 			onClick : function() {
-//				alert("This die has a value of " + this.val + ".");
+//				alert(id);
 			}
 		},
 		numPawns : function() { return this.pawns.length; },

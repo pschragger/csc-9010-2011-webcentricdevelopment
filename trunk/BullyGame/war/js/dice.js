@@ -117,8 +117,8 @@ function rollDice() {
 function beginTurn() {
 	$('diceButton').disabled = true;
 	takeTurnWithDice(rollDice());
-	setTimeout("takeTurnWithDice(rollDice())",1250);
-	setTimeout("takeTurnWithDice(rollDice())",1250*2);
-	setTimeout("takeTurnWithDice(rollDice())",1250*3);
-	setTimeout("$('diceButton').disabled = false;",1250*3)
+//	setTimeout("takeTurnWithDice(rollDice())",1250);
+//	setTimeout("takeTurnWithDice(rollDice())",1250*2);
+//	setTimeout("takeTurnWithDice(rollDice())",1250*3);
+//	setTimeout("$('diceButton').disabled = false;",1250*3)
 }
