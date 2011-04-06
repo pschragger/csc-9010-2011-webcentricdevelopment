@@ -11,6 +11,7 @@
 <% for(Greeting greeting : greetings) { %>
   <% if(greeting.getAuthor() == null) continue; %>
   <p>
+    <span class='chatDate'>[<%= greeting.getDate().getHours() %>:<%= greeting.getDate().getMinutes() %>]</span>
     <span class='chatName'><%= greeting.getAuthor().getNickname() %></span>:
     <span class='chatMessage'><%= greeting.getContent() %></span>
   </p>
