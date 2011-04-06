@@ -100,17 +100,12 @@ function setDice(v1,v2) {
 	var d2 = createDie('d2', v2, p2x,p2y, 0);
 	drawDiceRoll(d1,d2);
 	$('diceroll').play();
+	//TODO: Update movesLeft display 
+	GameState.movesLeft = (v1+v2);
 	//$('diceButton').disabled = true;	
 }
 
-// TEMP Function. Will be replaced with AJAX call.
 function rollDice() {   			   		
-	// Get Random values
-//	var v1 = Math.ceil(Math.random()*6);
-//	var v2 = Math.ceil(Math.random()*6);
-//	setDice(v1,v2);
-//	
-//	return v1+v2;
 	getCard();
 } 
 
