@@ -14,6 +14,13 @@
 			height: 150px;
 			overflow: auto;
 		}
+			#chatMessages .chatName {
+				font-weight: bold;
+			}
+			#chatMessages p {
+				margin: 0 0 3px 0;
+				padding: 0;
+			}
 	</style>
 	<script type="text/javascript">
 		function update() {

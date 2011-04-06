@@ -4,6 +4,10 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
 
 import java.util.Date;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -56,5 +60,23 @@ public class Greeting {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+    
+    public static List<Greeting> findAll() {
+        PersistenceManager pmf = PMF.get().getPersistenceManager();
+        try {
+            Query query = pmf.newQuery(Greeting.class);
+            query.setOrdering("date asc");
+            List<Greeting> results = (List<Greeting>) query.execute();
+            
+            return (List<Greeting>)pmf.detachCopyAll(results);
+        } catch(Exception e) {
+            // If the table does not exist, the read will fail so we need to make the user
+            e.printStackTrace();
+        } finally {
+            pmf.close();
+        }
+        
+        return null;
     }
 }
