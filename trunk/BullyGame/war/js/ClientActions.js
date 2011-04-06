@@ -65,56 +65,16 @@
  */
 
 
-//old function...only used by the textarea to demonstrate functionality demo
-function sendData(DisplayID, DataID)
-{
-    function servletCallback()
-    {
-    	//make sure ready state = 4 and status = 200 (OK)
-    	if ((req.readyState==4) &&(req.status==200))
-        {
-            //console.log("callback received...");
-            
-            //decode the json and put it in an object
-            var receivedJSON = JSON.decode(req.responseText);
-            
-            //create the new html from the json's data
-            var newHtml = "<p>" + receivedJSON.Data + "</p>";
-            //console.log("new html = " + newHtml);
-            
-            //get the div id of a html element, and update its contents
-            var MyDiv = document.getElementById(receivedJSON.DivId);
-            MyDiv.innerHTML=newHtml;
-        }
-    }
 
-    function callServlet()
-    {
-      //create the JSON object
-      var dataElement = document.getElementById(DataID);
-      var data = dataElement.value;
-      var objJSON =
-      {
-        "DivId" : DisplayID,
-        "Data" : dataElement.value
-      };
-      var strJSON = JSON.encode(objJSON);
-      console.log("data = " + strJSON);
-      
-      //create and send the http request
-      var QueryString = "action=else&content=" + strJSON;
-      req.open("GET", "/bullygame/game?" + QueryString, true);
-      req.send(null);
-     
-    }
-
-    //create a new request & set its event handler
-    req = new XMLHttpRequest();
-    req.onreadystatechange = servletCallback;
-    
-    //send the request
-    callServlet();
-}
+/*Global Variables*/
+var Poll;
+var CookiePlayerID = "PlayerID";
+var CookieGameID = "GameID";
+var CookieTurnNumber = "TurnNumber";
+var CookieMyTurn = "MyTurn";
+var CookiePlayerTurnID = "PlayerTurnID";
+var CookieTotalPlayers = "TotalPlayers";
+var CookieUserName = "UserName";
 
 //function for fetching query parameters (from http://www.netlobo.com/url_query_string_javascript.html)
 function gup( name )
@@ -176,100 +136,87 @@ function getGameInfo()
     callServlet();
 }
 
-//function called when the page initially loads to join a game
+//join a game
 function joinGame()
 {
-	var GameID = Cookie.read("gameid");
-    var PlayerID = Cookie.read("playerid");
-    if ((GameID==null) || (PlayerID==null))
+	//get the player's username and game id from the query string	
+	var username = (Cookie.read(CookiePlayerID)!=null)?Cookie.read(CookiePlayerID):gup("username");
+	if (username=="")
 	{
-    	function servletCallback()
-        {
-        	//make sure ready state = 4 and status = 200 (OK)
-        	if ((req.readyState==4) &&(req.status==200))
-            {
-                //console.log("cookies received...");
-                
-                //decode the json and put it in an object
-                var receivedJSON = JSON.decode(req.responseText);
-                
-                if(!receivedJSON.Status)
-            	{
-		            //create the new cookies
-		            GameID = Cookie.write("gameid", receivedJSON.GameID);
-		            PlayerID = Cookie.write("playerid", receivedJSON.PlayerID);
-		            TurnNumber = Cookie.write("TurnNumber", parseFloat(receivedJSON.TurnNumber));
-		            MyTurn = Cookie.write("MyTurn","No");
-		            PlayerTurnID = Cookie.write("PlayerTurnID",parseFloat(receivedJSON.PlayerTurnID));
-		            
-		            
-		            //update the number of players
-		            var TotalPlayers = document.getElementById("numplayers");
-		            TotalPlayers.innerHTML = receivedJSON.NumberPlayers;
-		            var MaxPlayers = Cookie.write("TotalPlayers",receivedJSON.NumberPlayers);
-            	}
-                else
-            	{
-                	alert("There are no openings in this game, please join a new one.");
-            	}
-            }
-        }
-        
-    	function callServlet()
-        {
-    	  //get the player's username from the query string	
-    	  //console.log("fetch username");
-    	  var username = gup("username");
-    	  if (username==null)
-		  {
-    		  username = "anonymous";
-		  }
-    	  //console.log("username = " + username);
-    	  var GameID = Cookie.read("GameID");
-    	  if (GameID==null)
-		  {
-    		  GameID="-1";
-		  }
-    	  
-    	  //update the player name on the board
-          var UsernameSpan = document.getElementById("playername");
-          UsernameSpan.innerHTML = username;
-    	  
-    	  //create the json object query string
-    	  var objJSON = 
-		  {
-			  "PlayerID" : username,
-			  "GameID"	 : GameID
-		  };
-    	  var strJSON = JSON.encode(objJSON);
-    	  var QueryString = "action=joinGame&content=" + strJSON;
-          
-          //create and send the http request
-          req.open("POST", "/bullygame/game?" + QueryString, true);
-          req.send(null);
-         
-        }
-
-        //create a new request & set its event handler
-        req = new XMLHttpRequest();
-        req.onreadystatechange = servletCallback;
-        
-        //send the request
-        callServlet();
+		username = "-1";
 	}
-    else
+	else if (username=="0")
 	{
-    	getGameInfo();
+		var cookieArray = Cookie.read("dev_appserver_login").split(":");
+		username = cookieArray[2];
 	}
+	var GameID = (Cookie.read(CookieGameID)!=null)?Cookie.read(CookieGameID):gup("gameid");
+	if (GameID=="")
+	{
+		GameID="-1";
+	}
+	  
+	//update the player name on the board
+    var UsernameSpan = document.getElementById("playername");
+    UsernameSpan.innerHTML = username;
+	  
+	//create the json object query string
+	var objJSON = 
+	{
+			"PlayerID"	: username,
+			"GameID"	: GameID
+	};
+	var strJSON = JSON.encode(objJSON);
+	
+	//create HTTP Request
+	var QueryString = "action=joinGame&content=" + strJSON;
+	var req = new Request({
+        method: 'POST',
+        url: "/bullygame/game?" + QueryString,
+        onComplete: function(responseText) 
+        {
+        	//decode the json and put it in an object
+            var receivedJSON = JSON.decode(responseText);
+            
+            
+            if(!receivedJSON.Status)
+        	{
+	            //create the new cookies
+	            GameID = Cookie.write(CookieGameID, receivedJSON.GameID);
+	            PlayerID = Cookie.write(CookiePlayerID, receivedJSON.PlayerID);
+	            TurnNumber = Cookie.write(CookieTurnNumber, parseFloat(receivedJSON.TurnNumber));
+	            MyTurn = Cookie.write(CookieMyTurn,"No");
+	            PlayerTurnID = Cookie.write(CookiePlayerTurnID,parseFloat(receivedJSON.PlayerTurnID));
+	            var UserName = receivedJSON.UserName;
+	            Cookie.write(CookieUserName,UserName);
+	            
+	            //update the number of players
+	            var TotalPlayers = document.getElementById("numplayers");
+	            TotalPlayers.innerHTML = receivedJSON.NumberPlayers;
+	            var MaxPlayers = Cookie.write(CookieTotalPlayers,receivedJSON.NumberPlayers);
+	            
+	            //update user name
+	            var UserNameDiv = document.getElementById("playername");
+	            UserNameDiv.innerHTML = UserName;
+	            
+	            //start polling the server
+	            Poll = self.setInterval("checkState()",3000);
+        	}
+            else
+        	{
+            	alert("There are no openings in this game, please join a new one.");
+        	}
+        }
+      }).send();
 }
 
 //checks the cookies to make sure they didn't expire
 function checkCookies()
 {
 	//if cookies not found, ask servlet for game id and player id
-	var GameID = Cookie.read("gameid");
-    var PlayerID = Cookie.read("playerid");
-    var TurnNumber = Cookie.read("TurnNumber");
+	var GameID = Cookie.read(CookieGameID);
+    var PlayerID = Cookie.read(CookiePlayerID);
+    var TurnNumber = Cookie.read(CookieTurnNumber);
 	if ((GameID==null) || (PlayerID==null))
 	{
 		getGameInfo();
@@ -279,75 +226,56 @@ function checkCookies()
 //sends request to the server to draw a card
 function getCard()
 {
-	if (Cookie.read("MyTurn")=="Draw")
+	//get the session variables
+	checkCookies();
+	var GameID = Cookie.read(CookieGameID);
+	var PlayerID = Cookie.read(CookiePlayerID);
+	      
+	//create the JSON object
+	var objJSON =
 	{
-		function servletCallback()
-		{
-			//make sure ready state = 4 and status = 200 (OK)
-			if ((req.readyState==4) &&(req.status==200))
-			{
-			    //console.log("callback received...");
-			    
-			    //decode the json and put it in an object
-			    var receivedJSON = JSON.decode(req.responseText);
-			    
-			    //create the new html from the json's data
-			    var CardURL = receivedJSON.CardURL;
-			    var DiceRoll1 = receivedJSON.DiceRoll1;
-			    var DiceRoll2 = receivedJSON.DiceRoll2;
-			    
-			    //display a new card
-			    var NewCard = document.getElementById("NewCard");
-			    NewCard.src = CardURL;
-			    
-			    //update the dice
-			    var Dice1 = document.getElementById("Dice1");
-			    var Dice2 = document.getElementById("Dice2");
-		        Dice1.innerHTML = DiceRoll1;
-		        Dice2.innerHTML = DiceRoll2;
-		        
-		        //enable the play card button
-		        Cookie.write("MyTurn","Play");
-		        var DrawCardButtonDiv = document.getElementById("DrawCardButton");
-		        var PlayCardButtonDiv = document.getElementById("PlayCardButton");
-		        DrawCardButtonDiv.disabled=true;
-		        PlayCardButtonDiv.disabled=false;
-	        }
-		}
-		
-		function callServlet()
-		{
-		  //get the session variables
-		  checkCookies();
-		  var GameID = Cookie.read("gameid");
-		  var PlayerID = Cookie.read("playerid");
-		        
-		  //create the JSON object
-		  var objJSON =
-		  {
-		    "GameID" : GameID,
-		    "PlayerID" : PlayerID
-		  };
-		
-		  var strJSON = JSON.encode(objJSON);
-		  
-		  //create and send the http request
-		  var QueryString = "action=GetCard&content=" + strJSON;
-		  req.open("GET", "/bullygame/game?" + QueryString, true);
-		  req.send(null);
-		 
-		}
-		
-		//create a new request & set its event handler
-		req = new XMLHttpRequest();
-		req.onreadystatechange = servletCallback;
-		
-		//send the request
-		callServlet();
-	}
+			"GameID"	: GameID,
+			"PlayerID"	: PlayerID
+	};
+	var strJSON = JSON.encode(objJSON);
+	
+	//create and send the http request
+	var QueryString = "action=GetCard&content=" + strJSON;
+	var req = new Request({
+        method: 'GET',
+        url: "/bullygame/game?" + QueryString,
+        onComplete: function(responseText) 
+        {
+        	//decode the json and put it in an object
+		    var receivedJSON = JSON.decode(responseText);
+		    
+		    //create the new html from the json's data
+		    var CardURL = receivedJSON.CardURL;
+		    var DiceRoll1 = receivedJSON.DiceRoll1;
+		    var DiceRoll2 = receivedJSON.DiceRoll2;
+		    
+		    //display a new card
+		    var NewCard = document.getElementById("NewCard");
+		    NewCard.src = CardURL;
+		    
+		    //update the dice
+		    var Dice1 = document.getElementById("Dice1");
+		    var Dice2 = document.getElementById("Dice2");
+	        Dice1.innerHTML = DiceRoll1;
+	        Dice2.innerHTML = DiceRoll2;
+	        
+	        //enable the play card button
+	        Cookie.write(CookieMyTurn,"Play");
+	        var DrawCardButtonDiv = document.getElementById("DrawCardButton");
+	        var PlayCardButtonDiv = document.getElementById("PlayCardButton");
+	        DrawCardButtonDiv.disabled=true;
+	        PlayCardButtonDiv.disabled=false;
+        }
+      }).send();
 }
 
 //sends a request to the server to use a card
+/*
 function playTurn()
 {
 	if (Cookie.read("MyTurn")=="Play")
@@ -429,100 +357,146 @@ function playTurn()
 	    callServlet();
 	}
 }
+*/
+function playTurn()
+{
+	//get the session variables
+    checkCookies();
+    var GameID = Cookie.read(CookieGameID);
+    var PlayerID = Cookie.read(CookiePlayerID);
+    
+    //get the dice rolls
+    var Die1 = parseInt(document.getElementById("Dice1").innerHTML);
+    var Die2 = parseInt(document.getElementById("Dice2").innerHTML);
+    var CardNumber = 1;
+    
+    //get pawn moves
+    var pNumberArray = [1];
+    var pStartArray = [0];
+    var pEndArray = [5];
+    
+    //create the JSON object
+    var objJSON =
+    {
+      "GameID" : GameID,
+      "CardNumber" : CardNumber,
+      "PlayerID" : PlayerID,
+      "DiceRoll1" : Die1,
+      "DiceRoll2" : Die2,
+      "Moves" : 
+      	{
+      		"PawnNumber" : pNumberArray,
+      		"StartSpace" : pStartArray,
+      		"EndSpace" : pEndArray
+    	}
+    };
+
+    var strJSON = JSON.encode(objJSON);
+    
+    //create and send the http request
+    var QueryString = "action=playTurn&content=" + strJSON;
+    var req = new Request({
+        method: 'PUT',
+        url: "/bullygame/game?" + QueryString,
+        onComplete: function(responseText) 
+        {
+        	//decode the json and put it in an object
+            var receivedJSON = JSON.decode(responseText);
+            
+            //create the new html from the json's data
+            var Status = receivedJSON.Status
+            
+            //display a new card
+            if (Status=="Valid")
+        	{
+            	alert("roll was validated by the server.");
+            	Cookie.write(CookieMyTurn,"No");
+            	var PlayCardButtonDiv = document.getElementById("PlayCardButton");
+            	PlayCardButtonDiv.disabled=true;
+        	}
+        }
+      }).PUT();
+    
+}
 
 //sends a request to the server to see if the game state has changed
 function checkState()
 {
-	function servletCallback()
+	//get the session variables
+    //checkCookies();
+    var GameID = Cookie.read(CookieGameID);
+    var PlayerID = Cookie.read(CookiePlayerID);
+    var TurnNumber = Cookie.read(CookieTurnNumber)
+          
+    //create the JSON object
+    var objJSON =
     {
-    	//make sure ready state = 4 and status = 200 (OK)
-    	if ((req.readyState==4) &&(req.status==200))
-        {
-            //console.log("game state check callback received...");
-            
-            //decode the json and put it in an object
-            var receivedJSON = JSON.decode(req.responseText);
-            
-            //create the new html from the json's data
-            
-            
-            //check to see if something was changed
-            var Status = receivedJSON.Status;
-            if (Status=="State Changed")
-        	{
-            	//update the turn
-                var TurnNumber = parseFloat(receivedJSON.TurnNumber);
-                if (TurnNumber!=Cookie.read("TurnNumber"))
-            	{
-                	//console.log("new turn number");
-    	            Cookie.write("TurnNumber",TurnNumber);
-                	var TurnNumberDiv = document.getElementById("turn"); 
-    	            TurnNumberDiv.innerHTML = TurnNumber;
-            	}
-                
-                //check total amount of players for change
-                var TotalPlayers = parseFloat(receivedJSON.TotalPlayers);
-                if (TotalPlayers!=Cookie.read("TotalPlayers"))
-            	{
-    		        Cookie.write("TotalPlayers",TotalPlayers);
-    		        var TotalPlayersDiv = document.getElementById("numplayers");
-    		        TotalPlayersDiv.innerHTML = TotalPlayers;
-            	}
-                
-                //check if its now your turn
-                var PlayerTurnID = parseFloat(Cookie.read("PlayerTurnID"));
-                //console.log("player turn id: " + PlayerTurnID);
-                
-                //console.log("overall turn number: " + TurnNumber);
-                var CurrentTurn = TurnNumber % TotalPlayers;
-                //console.log("current turn: " + CurrentTurn);
-                
-                
-                if ((CurrentTurn==PlayerTurnID) && (TotalPlayers>1))
-            	{
-                	//it IS this player's turn
-                	//console.log("My turn!!!");
-                	if (Cookie.read("MyTurn")=="No")
-            		{
-            			Cookie.write("MyTurn","Draw");
-                    	var DrawCardButtonDiv = document.getElementById("DrawCardButton");
-                    	DrawCardButtonDiv.disabled = false;
-                	}
-            	}
-        	}
-        }
-    }
-
-    function callServlet()
-    {
-      //get the session variables
-      //checkCookies();
-      var GameID = Cookie.read("gameid");
-      var PlayerID = Cookie.read("playerid");
-      var TurnNumber = Cookie.read("TurnNumber")
-            
-      //create the JSON object
-      var objJSON =
-      {
-        "GameID" : GameID,
-        "PlayerID" : PlayerID,
-        "TurnNumber" : TurnNumber
-      };
-
-      var strJSON = JSON.encode(objJSON);
-      //console.log("JSON sent: " + strJSON);
-      
-      //create and send the http request
-      var QueryString = "action=CheckState&content=" + strJSON;
-      req.open("GET", "/bullygame/game?" + QueryString, true);
-      req.send(null);
-     
-    }
-
-    //create a new request & set its event handler
-    req = new XMLHttpRequest();
-    req.onreadystatechange = servletCallback;
+      "GameID" : GameID,
+      "PlayerID" : PlayerID,
+      "TurnNumber" : TurnNumber
+    };
+    var strJSON = JSON.encode(objJSON);
     
-    //send the request
-    callServlet();
+    //create and send the http request
+    var QueryString = "action=CheckState&content=" + strJSON; 
+    var req = new Request({
+        method: 'get',
+        url: "/bullygame/game?" + QueryString,
+        timeout: 1000,
+        onTimeout: function(){alert("Could not connect to the game server..."); window.clearInterval(Poll); },
+        onComplete: function(responseText) 
+        {
+        	//onTimeout still passes the event to onComplete so make sure the response is not null
+        	if (responseText!=null)
+        	{
+	        	//decode the json and put it in an object
+	            var receivedJSON = JSON.decode(responseText);
+	
+	            //check to see if something was changed
+	            var Status = receivedJSON.Status;
+	            if (Status=="State Changed")
+	        	{
+	            	//update the turn
+	                var TurnNumber = parseFloat(receivedJSON.TurnNumber);
+	                if (TurnNumber!=Cookie.read(CookieTurnNumber))
+	            	{
+	                	//console.log("new turn number");
+	    	            Cookie.write(CookieTurnNumber,TurnNumber);
+	                	var TurnNumberDiv = document.getElementById("turn"); 
+	    	            TurnNumberDiv.innerHTML = TurnNumber;
+	            	}
+	                
+	                //check total amount of players for change
+	                var TotalPlayers = parseFloat(receivedJSON.TotalPlayers);
+	                if (TotalPlayers!=Cookie.read(CookieTotalPlayers))
+	            	{
+	    		        Cookie.write(CookieTotalPlayers,TotalPlayers);
+	    		        var TotalPlayersDiv = document.getElementById("numplayers");
+	    		        TotalPlayersDiv.innerHTML = TotalPlayers;
+	            	}
+	                
+	                //check if its now your turn
+	                var PlayerTurnID = parseFloat(Cookie.read(CookiePlayerTurnID));
+	                //console.log("player turn id: " + PlayerTurnID);
+	                
+	                //console.log("overall turn number: " + TurnNumber);
+	                var CurrentTurn = TurnNumber % TotalPlayers;
+	                //console.log("current turn: " + CurrentTurn);
+	                
+	                
+	                if ((CurrentTurn==PlayerTurnID) && (TotalPlayers>1))
+	            	{
+	                	//it IS this player's turn
+	                	//console.log("My turn!!!");
+	                	if (Cookie.read(CookieMyTurn)=="No")
+	            		{
+	            			Cookie.write(CookieMyTurn,"Draw");
+	                    	var DrawCardButtonDiv = document.getElementById("DrawCardButton");
+	                    	DrawCardButtonDiv.disabled = false;
+	                	}
+	            	}
+	        	}
+        	} 
+        }
+      }).send();
 }
