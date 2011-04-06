@@ -2,13 +2,16 @@ package edu.villanova.csc9010.bullygame.server;
 import java.io.IOException;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.servlet.http.*;
+
 import java.io.PrintWriter;
 import java.util.List;
 
 import org.datanucleus.jdo.JDOAdapter;
 import org.json.simple.*;
 import org.json.simple.parser.*;
+
 
 public class GameServlet  extends HttpServlet
 {
@@ -19,6 +22,7 @@ public class GameServlet  extends HttpServlet
 	//Static JSON names
 	static final String JSONGameID = "GameID";
 	static final String JSONPlayerID = "PlayerID";
+	static final String JSONUserName = "UserName";
 	static final String JSONTurnNumber = "TurnNumber";
 	static final String JSONNumberPlayers = "NumberPlayers";
 	static final String JSONPlayerTurnID = "PlayerTurnID";
@@ -69,77 +73,127 @@ public class GameServlet  extends HttpServlet
 		
 		//parse the string into a json object
 		JSONObject json = parseJSON(jsonContent);
-		long UserID = Long.parseLong(json.get(JSONPlayerID).toString());
-		long UserKey = Long.parseLong(json.get(JSONGameID).toString());
-		if (UserKey==-1)
-		{
-			UserKey = ThisKey;
-		}
+		String UserID = json.get(JSONPlayerID).toString();
+		//long UserID = Long.parseLong(UserIDString);
+		long UserGameID = Long.parseLong(json.get(JSONGameID).toString());
+		String Nickname = "Error: could not find user's nickname";
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		String query = "select count(key) from " + GamePlayer.class.getName() + " where gameID==" + ThisKey;
-		Integer NumberPlayers = (Integer) pm.newQuery(query).execute();
-		System.out.println("number of players = " + NumberPlayers.toString());
 		
-		GameState ThisGame = pm.getObjectById(GameState.class, UserKey);
-		Integer GamePlayersJoined = ThisGame.getNumberPlayersJoined();
-		Integer GameTurnNumber = ThisGame.getTurnNumber();
-		
-		//make sure there are open spots
-		if (GamePlayersJoined<MaxPlayers)
+		//check the user id
+		if (UserID.equals("-1"))
 		{
-			//add user to the players array
-//			PlayersArray[NumberPlayers] = Username;
-//			PlayersJoined++;
-//			System.out.println(Username + " joined the game");
+			Response = "{\"Status\":\"Invalid PlayerID given\"}";
+		}
+		else
+		{
+			//check to see if need to make a new game state
+			if (UserGameID==-1)
+			{
+				//create a new game
+				GameState G = new GameState();
+				pm.makePersistent(G);
+				UserGameID = G.getKey().getId();
+			}
+			
+			String query = "select from " + GamePlayer.class.getName();
+			List<GamePlayer> allplayers = (List<GamePlayer>)pm.newQuery(query).execute();
+			if (!allplayers.isEmpty())
+			{
+				for (GamePlayer thisplayer : allplayers)
+				{
+					System.out.println("***checking " + thisplayer.getUser());
+					if((thisplayer.getUser().equals(UserID)) &&(thisplayer.getGame()==UserGameID))
+					{
+						//player is already part of this game
+						System.out.println("User re-joined an old game");
+						break;
+					}
+				}
+			}
+			
+			GameState ThisGame = pm.getObjectById(GameState.class, UserGameID);
+			Integer GamePlayersJoined = ThisGame.getNumberPlayersJoined();
+			Integer GameTurnNumber = ThisGame.getTurnNumber();
 			
 			//create a new GamePlayer object
-			try 
+			try
 			{
-				//Create 4 pawns at position 0 for this player/color/game combo
-				for (int pNum=0;pNum<4;pNum++)
+				//get player's google nickname
+				String query2 = "select from " + BullyUser.class.getName();
+				//String query2 = "select from " + BullyUser.class.getName() + " where userId == " + UserID;
+				List<BullyUser> gameplayers = (List<BullyUser>) pm.newQuery(query2).execute();
+				long alreadyJoinedID = -1;
+				if (!gameplayers.isEmpty())
 				{
-					pm.makePersistent(new PawnState(UserKey, NumberPlayers.intValue(), pNum, 0));
+					for (BullyUser player : gameplayers)
+					{
+						if (player.getUserId().equals(UserID))
+						{
+							Nickname = player.getName();
+							alreadyJoinedID = player.getId();
+							break;
+						}
+					}
 				}
-
-				//Create Game/Player association
-				pm.makePersistent(new GamePlayer(UserKey, UserID, NumberPlayers.intValue(),1));
-				
-				//update the game state
-				ThisGame.setNumberPlayers(GamePlayersJoined+1);
-				if (GamePlayersJoined==0)
+			
+				//make sure there are open spots and add a new player
+				if (alreadyJoinedID>=0)
 				{
-					ThisGame.setCurrentPlayer(UserID);
+					//user has already joined this game, just fetch game state
+					json.put(JSONGameID, UserGameID);
+					json.put(JSONUserName, Nickname);
+					json.put(JSONTurnNumber, GameTurnNumber);
+					json.put(JSONNumberPlayers, GamePlayersJoined+1);
+					json.put(JSONPlayerTurnID, GamePlayersJoined);
+					
+					Response = json.toJSONString();
 				}
-				
-				//check to see if game if now full
-				if ((1+GamePlayersJoined)==MaxPlayers)
+				else if (GamePlayersJoined<MaxPlayers) 
 				{
-					PlayerTurn++;
-					ThisGame.setTurnNumber(0);
-					GameTurnNumber++;
+					//Create 4 pawns at position 0 for this player/color/game combo
+					for (int pNum=0;pNum<4;pNum++)
+					{
+						pm.makePersistent(new PawnState(UserGameID, GamePlayersJoined, pNum, 0));
+					}
+	
+					//Create Game/Player association
+					pm.makePersistent(new GamePlayer(UserGameID, UserID, GamePlayersJoined,1));
+					
+					//update the game state
+					ThisGame.setNumberPlayers(GamePlayersJoined+1);
+					if (GamePlayersJoined==0)
+					{
+						ThisGame.setCurrentPlayer(UserID);
+					}
+					
+					//check to see if game if now full
+					if ((1+GamePlayersJoined)==MaxPlayers)
+					{
+						PlayerTurn++;
+						ThisGame.setTurnNumber(0);
+						GameTurnNumber++;
+					}
+					
+					//make return json
+					json.put(JSONGameID, UserGameID);
+					json.put(JSONUserName, Nickname);
+					json.put(JSONTurnNumber, GameTurnNumber);
+					json.put(JSONNumberPlayers, GamePlayersJoined+1);
+					json.put(JSONPlayerTurnID, GamePlayersJoined);
+					
+					Response = json.toJSONString();
+				}
+				else
+				{
+					//already at max capacity for players
+					Response = "{\"Status\":\"No openings\"}";
 				}
 			}
 			finally
 			{
 				pm.close();
-			}
-			
-			
-			
-			
-			//make return json
-			json.put(JSONGameID, UserKey);
-			json.put(JSONTurnNumber, GameTurnNumber);
-			json.put(JSONNumberPlayers, GamePlayersJoined+1);
-			json.put(JSONPlayerTurnID, GamePlayersJoined);
-			
-			Response = json.toJSONString();
-		}
-		else
-		{
-			//already at max capacity for players
-			Response = "{\"Status\":\"No openings\"}";
+			}		
 		}
 		return Response;
 	}
@@ -236,7 +290,7 @@ public class GameServlet  extends HttpServlet
 		//parse the string into a json object
 		JSONObject json = parseJSON(jsonContent);
 		long GameID = Long.parseLong(json.get(JSONGameID).toString());
-		long PlayerID = Long.parseLong(json.get(JSONPlayerID).toString());
+		String PlayerID = json.get(JSONPlayerID).toString();
 		
 		//get turn info
 		Integer DiceRoll1 = Integer.parseInt(json.get(JSONDiceRoll1).toString());
@@ -265,11 +319,11 @@ public class GameServlet  extends HttpServlet
 		}
 		
 		//find out whose turn it is
-		long CurrentPlayer = Players.get(CurrentPlayerTurn).getUser();
+		String CurrentPlayer = Players.get(CurrentPlayerTurn).getUser();
 		
 		//check to see if proposed move is valid
 		String Response = null;
-		boolean ValidMove = CurrentPlayer==PlayerID;
+		boolean ValidMove = CurrentPlayer.equals(PlayerID);
 		boolean Roll1 = DiceRoll1.equals(ThisGame.getDie1());
 		boolean Roll2 = DiceRoll2.equals(ThisGame.getDie2());
 		
@@ -283,7 +337,7 @@ public class GameServlet  extends HttpServlet
 			ThisGame.setTurnNumber(1 + TurnNumber);
 			
 			//determine next turn
-			long NextPlayer;
+			String NextPlayer;
 			CurrentPlayerTurn++;
 			if (CurrentPlayerTurn==MaxPlayers)
 			{
@@ -500,7 +554,7 @@ public class GameServlet  extends HttpServlet
 		}
 		
 		//set response error by default, change if content != null
-        String returnString = null;
+        String returnString = "{\"Status\":\"Error: Request action not caught in POST\"}";
         response.setContentType("application/xhtml+xml");
 
         String Command = request.getParameter("action");
@@ -519,6 +573,13 @@ public class GameServlet  extends HttpServlet
             {
             	//start the game
             }
+    	}
+        else if (Command.compareTo("playTurn")==0)
+        {
+        	//should be handled by PUT, but mootools is always sending a POST instead....
+        	System.out.println("Making a turn");
+        	String jsonContent = request.getParameter("content");
+            returnString = playTurn(jsonContent);
     	}
         
         
@@ -562,5 +623,6 @@ public class GameServlet  extends HttpServlet
         PrintWriter out = response.getWriter();
         out.printf(returnString);
         out.close();
-	}		
+	}
+		
 }

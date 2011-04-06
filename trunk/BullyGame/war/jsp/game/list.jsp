@@ -31,13 +31,18 @@
 		{
 		%>
 			<p>
-			<a href="update.jsp?game=<%= gm.getKey().getId() %>">Game <%= gm.getKey().getId() %></a> was started <%= gm.getStartDate().toString() %><br />
+			<!--  <a href="update.jsp?game=<%/*= gm.getKey().getId() */%>">Game <%/*= gm.getKey().getId() */%></a> was started <%/*= gm.getStartDate().toString() */%><br /> -->
+			<a href="/ClientTest.html?username=0&gameid=<%= gm.getKey().getId() %>">Game <%= gm.getKey().getId() %></a> was started <%= gm.getStartDate().toString() %><br />
 			</p>
 		<%			
 		}
 	}
 %>
 <br />
+<form action="/newGame" method="get">
+	<label>Username: </label>
+	<input type="submit" value="Start New Game"/>
+</form>
 <form action="/newGame" method="post">
 	<label>Player 1</label><input type="text" id="player" name="player">
 	<label>Player 2</label><input type="text" id="player" name="player">

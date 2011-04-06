@@ -57,5 +57,26 @@ public class createGameServlet extends HttpServlet {
 		resp.sendRedirect("/jsp/game/list.jsp");
 	}
 	
-
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
+	{
+		Cookie[] UserCookies = req.getCookies();
+		String[] myCookie = null;
+		if (UserCookies!=null)
+		{
+			for (int i=0; i<UserCookies.length; i++)
+			{
+				if (UserCookies[i].getName().equals("dev_appserver_login"))
+				{
+					Cookie someCookie = UserCookies[i];
+					myCookie = someCookie.getValue().split(":");
+					break;
+				}
+			}
+		}
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		
+		String newURL = "/ClientTest.html?username=" + myCookie[2];
+		System.out.println("New URL is " + newURL);
+		resp.sendRedirect(newURL);
+	}
 }

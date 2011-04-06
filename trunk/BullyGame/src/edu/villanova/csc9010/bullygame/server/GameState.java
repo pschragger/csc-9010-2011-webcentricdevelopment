@@ -22,7 +22,7 @@ public class GameState {
 	private Date startDate;
 	
 	@Persistent
-	private long currentPlayer;
+	private String currentPlayer;	//long currentPlayer;
 	
 	@Persistent
 	private boolean active;
@@ -52,11 +52,11 @@ public class GameState {
 	public GameState()
 	{
 		this.startDate = new Date();
-		this.currentPlayer = 0;
+		this.currentPlayer = "0";
 		this.winner = 0;
 		this.endDate = null;
 		this.active = true;
-		this.TurnNumber = 0;
+		this.TurnNumber = -1;
 		this.PlayersJoined = 0;
 		this.Die1 = 0;
 		this.Die2 = 0;
@@ -71,7 +71,7 @@ public class GameState {
 	 * @param ed the end date
 	 * @param a true if active, false if not
 	 */
-	public GameState(Key key, Date s, long cp, long w, Date ed, boolean a)
+	public GameState(Key key, Date s, String cp, long w, Date ed, boolean a)
 	{
 		this.key = key;
 		this.startDate = s;
@@ -94,7 +94,7 @@ public class GameState {
 		return startDate;
 	}
 	
-	public long getCurrentPlayer()
+	public String getCurrentPlayer()
 	{
 		return currentPlayer;
 	}
@@ -141,7 +141,7 @@ public class GameState {
 		startDate = st;
 	}
 	
-	public void setCurrentPlayer(long cp)
+	public void setCurrentPlayer(String cp)
 	{
 		currentPlayer = cp;
 	}
