@@ -2,7 +2,10 @@ syntax: glob
 
 *.class
 *.rpc
+*.symbolMap
+*.cache.*
 
+trunk/BullyGame/war/WEB-INF/deploy/bullygame/symbolMaps/*
 trunk/BullyGame/war/bullygame/gwt/standard/*
 trunk/BullyGame/war/bullygame/bullygame.nocache.js
 trunk/BullyGame/war/bullygame/clear.cache.gif

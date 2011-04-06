@@ -12,7 +12,8 @@ public class UsersServlet extends HttpServlet {
 	public void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		BullyUser user = BullyUser.loggedInUser();
 		if(user == null) {
-			response.sendRedirect(BullyUser.loginUrl());
+            request.getSession().setAttribute("flash", "You have not been logged in.");
+		    response.sendRedirect("/");
 		} else {
 			response.sendRedirect("/");
 		}
