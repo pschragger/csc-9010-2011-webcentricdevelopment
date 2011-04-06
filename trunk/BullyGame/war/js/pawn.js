@@ -30,7 +30,7 @@ function createPawn(x, y, radius, cIndex, pIndex)
 //				this.fillStyle=COLORS[this.cIndex]; 
 			},
 			onClick : function() {
-				if (GameState.myTurn() ){//}&& this.cIndex == GameState.turnIndex) {
+				if (GameState.myTurn() && GameState.movesLeft > 0){
 					this.select();
 				}
 			}			

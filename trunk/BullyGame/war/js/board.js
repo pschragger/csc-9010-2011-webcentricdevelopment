@@ -19,19 +19,19 @@ var PAWN_TWO = 1;
 var PAWN_THREE = 2;
 var PAWN_FOUR = 3;
 
-var paths = [4];
+var paths = [];
 paths[RED] = [69];
 paths[YELLOW] = [69];
 paths[GREEN] = [69];
 paths[BLUE] = [69];
 
-var pawns = [4];
+var pawns = [];
 pawns[RED] = [4];
 pawns[YELLOW] = [4];
 pawns[GREEN] = [4];
 pawns[BLUE] = [4];
 
-var homes = [4];
+var homes = [];
 homes[RED] = 0; 
 homes[YELLOW] = 0;
 homes[GREEN] = 0;
@@ -47,8 +47,14 @@ var colorToMove = RED;
 var pawnToMove = PAWN_ONE;
 
 var NUM_PAWNS = 2; // SHOULD BE 4, CHANGE WHEN WE HAVE 4 PAWNS!
+var NUM_OUTER_SQUARES = 64;
+var PATH_ENDS = [25,41,57,9];
+var OUTER_SQUARE = 1;
+var INNER_SQUARE = 2;
+var START_SQUARE = 3;
+var OTHER_SQUARE = 4;
 
-var start_positions = [4];
+var start_positions = [];
 start_positions[RED] = [NUM_PAWNS]; 
 start_positions[RED][PAWN_ONE] = new Point(square_size-(3.5*size),(mid+2.75)*size);
 start_positions[RED][PAWN_TWO] = new Point(square_size-(2.1*size),(mid+2.75)*size);
@@ -62,7 +68,7 @@ start_positions[BLUE] = [NUM_PAWNS];
 start_positions[BLUE][PAWN_ONE] = new Point((mid+2.75)*size,(2*size));
 start_positions[BLUE][PAWN_TWO] = new Point((mid+4.15)*size,(2*size));
 
-var home_positions = [4];
+var home_positions = [];
 home_positions[RED] = [NUM_PAWNS]; 
 home_positions[YELLOW] = [NUM_PAWNS];
 home_positions[GREEN] = [NUM_PAWNS];
@@ -103,28 +109,28 @@ function setUpBoard()
     // Top row
     for(var c = 0; c < spaces; c++)
     {
-      squares[++count] = createSquare(c*size, 0, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(c*size, 0, size, String(count), OUTER_SQUARE, COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
     }
 
     // Right column
     for(var c = 1; c < spaces-1; c++)
     {
-      squares[++count] = createSquare(square_size-size, c*size, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(square_size-size, c*size, size, String(count), OUTER_SQUARE, COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
     }
     
     // Bottom row
     for(var c = spaces-1; c > -1; c--)
     {
-      squares[++count] = createSquare(c*size, square_size-size, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(c*size, square_size-size, size, String(count), OUTER_SQUARE, COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
     }
     
     // Left column
     for(var c = spaces-2; c > 0; c--)
     {
-      squares[++count] = createSquare(0, c*size, size, String(count), COLORS[STEELBLUE]);
+      squares[++count] = createSquare(0, c*size, size, String(count), OUTER_SQUARE, COLORS[STEELBLUE]);
       boardLayer.add(squares[count]);
     }
     
@@ -192,13 +198,13 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[RED][rcount] = createSquare(square_size-((c+1)*size), mid*size, size, 'red-path-'+c, COLORS[RED]);
+      paths[RED][rcount] = createSquare(square_size-((c+1)*size), mid*size, size, 'red-path-'+c, INNER_SQUARE, COLORS[RED]);
       boardLayer.add(paths[RED][rcount]);
       rcount++;
     }
     
     // Red Start area
-    paths[RED][0] = createSquare(square_size-(4.25*size),(mid+2)*size,size*3,'red-start', COLORS[RED]);
+    paths[RED][0] = createSquare(square_size-(4.25*size),(mid+2)*size,size*3,'red-start', START_SQUARE, COLORS[RED]);
     boardLayer.add(paths[RED][0]);
     
     // Pawns
@@ -217,13 +223,13 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[YELLOW][ycount] = createSquare(c*size, mid*size, size, 'yellow-path-'+c, COLORS[YELLOW]);
+      paths[YELLOW][ycount] = createSquare(c*size, mid*size, size, 'yellow-path-'+c, INNER_SQUARE, COLORS[YELLOW]);
       boardLayer.add(paths[YELLOW][ycount]);
       ycount++;
     }
     
     // Start area
-    paths[YELLOW][0] = createSquare(1.25*size,(mid-4)*size,size*3,'yellow-start', COLORS[YELLOW]);
+    paths[YELLOW][0] = createSquare(1.25*size,(mid-4)*size,size*3,'yellow-start', START_SQUARE, COLORS[YELLOW]);
     boardLayer.add(paths[YELLOW][0]);
     
     // Pawns
@@ -242,13 +248,13 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[GREEN][gcount] = createSquare(mid*size, square_size-((c+1)*size), size, 'green-path-'+c, COLORS[GREEN]);
+      paths[GREEN][gcount] = createSquare(mid*size, square_size-((c+1)*size), size, 'green-path-'+c, INNER_SQUARE, COLORS[GREEN]);
       boardLayer.add(paths[GREEN][gcount]);
       gcount++;
     }
     
     // Green Start area
-    paths[GREEN][0] = createSquare((mid-4)*size,square_size-(4.25*size),size*3,'green-start',COLORS[GREEN]);
+    paths[GREEN][0] = createSquare((mid-4)*size,square_size-(4.25*size),size*3,'green-start', START_SQUARE, COLORS[GREEN]);
     boardLayer.add(paths[GREEN][0]);
     
     // Pawns
@@ -267,13 +273,13 @@ function setUpBoard()
     // Home path
     for(var c = 1; c < mid-2; c++)
     {
-      paths[BLUE][bcount] = createSquare(mid*size, c*size, size, 'blue-path-'+c, COLORS[BLUE]);
+      paths[BLUE][bcount] = createSquare(mid*size, c*size, size, 'blue-path-'+c, INNER_SQUARE, COLORS[BLUE]);
       boardLayer.add(paths[BLUE][bcount]);
       bcount++;
     }
     
     // Blue Start area
-    paths[BLUE][0] = createSquare((mid+2)*size,(1.25*size),size*3,'blue-start',COLORS[BLUE]);
+    paths[BLUE][0] = createSquare((mid+2)*size,(1.25*size),size*3,'blue-start', START_SQUARE, COLORS[BLUE]);
     boardLayer.add(paths[BLUE][0]);
 	
     pawns[BLUE][PAWN_ONE] = createPawn(start_positions[BLUE][PAWN_ONE].x,
@@ -312,10 +318,10 @@ function setUpBoard()
     });
     pawnLayer.add(homeArea);
     
-    paths[RED][rcount] = createSquare((mid*size)+(size/2),(mid*size)+(size/2),size*2.5,'red-home', COLORS[RED]);
-    paths[YELLOW][ycount] = createSquare((mid*size)-(size*2),(mid*size)-(size*2),size*2.5,'yellow-home', COLORS[YELLOW]);
-    paths[GREEN][gcount] = createSquare((mid*size)-(size*2),(mid*size)+(size/2),size*2.5,'green-home', COLORS[GREEN]);
-    paths[BLUE][bcount] = createSquare((mid*size)+(size/2),(mid*size)-(size*2),size*2.5,'blue-home', COLORS[BLUE]);
+    paths[RED][rcount] = createSquare((mid*size)+(size/2),(mid*size)+(size/2),size*2.5,'red-home', OTHER_SQUARE, COLORS[RED]);
+    paths[YELLOW][ycount] = createSquare((mid*size)-(size*2),(mid*size)-(size*2),size*2.5,'yellow-home', OTHER_SQUARE, COLORS[YELLOW]);
+    paths[GREEN][gcount] = createSquare((mid*size)-(size*2),(mid*size)+(size/2),size*2.5,'green-home', OTHER_SQUARE, COLORS[GREEN]);
+    paths[BLUE][bcount] = createSquare((mid*size)+(size/2),(mid*size)-(size*2),size*2.5,'blue-home', OTHER_SQUARE, COLORS[BLUE]);
     boardLayer.add(paths[RED][rcount]);
     boardLayer.add(paths[YELLOW][ycount]);
     boardLayer.add(paths[GREEN][gcount]);
