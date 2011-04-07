@@ -30,7 +30,7 @@ function createPawn(x, y, radius, cIndex, pIndex)
 //				this.fillStyle=COLORS[this.cIndex]; 
 			},
 			onClick : function() {
-				if (GameState.myTurn() && GameState.movesLeft > 0){
+				if (GameState.turnIndex==this.cIndex && GameState.movesLeft > 0){
 					this.select();
 				}
 			}			
@@ -48,13 +48,29 @@ function createPawn(x, y, radius, cIndex, pIndex)
 					GameState.selectedPawn.deselect();
 				GameState.selectedPawn = this;
 				this.selected = true;
-				this.strokeStyle = (this.cIndex == YELLOW) ? COLORS[RED] : COLORS[YELLOW];
+				this.strokeStyle = (this.cIndex==YELLOW) ? COLORS[RED] : COLORS[YELLOW];
 			}
 		},
 		deselect : function() {
 			this.strokeStyle = COLORS[BLACK];
 			this.selected = false;
 			GameState.selectedPawn = null;
+		},
+		moveTo: function(square) {
+			var dist = square.distFromSelection();
+			GameState.movesLeft -= dist;
+			//TODO: update movesLeft display div
+			// animation
+			new Cmorph(this,{
+				link : 'chain',
+                duration : 'normal',
+                transition : 'sine:in:out'
+			}).morph({
+                x : square.x+square.w/2,
+                y : square.y+square.h/2,
+			});
+			//update location
+			this.setLocation(square);
 		}
 	});
 	GameState.pawns[pawn.id] = pawn;

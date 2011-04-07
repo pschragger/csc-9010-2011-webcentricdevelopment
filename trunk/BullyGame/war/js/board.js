@@ -98,7 +98,7 @@ function setUpBoard()
 	}));
 //	var pawnLayer = boardLayer;
 
-    var squares = [64];
+    var squares = [];
     var count = 0;
     
     // Draw the initial board
@@ -349,8 +349,7 @@ function setUpBoard()
 
 //    boardLayer.draw();
 //    pawnLayer.draw();
-    
-    
+        
     var myThread = CANVAS.addThread(new Thread({
         id : 'myThread',
         onExec : function(){
