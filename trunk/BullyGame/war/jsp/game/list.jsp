@@ -5,6 +5,7 @@
 <%@ page import="edu.villanova.csc9010.bullygame.server.GamePlayer" %>
 <%@ page import="edu.villanova.csc9010.bullygame.server.GameState" %>
 <%@ page import="edu.villanova.csc9010.bullygame.server.PawnState" %>
+<%@ page import="edu.villanova.csc9010.bullygame.server.BullyUser" %>
 <%@ page import="edu.villanova.csc9010.bullygame.server.PMF" %>
 
 <html>
@@ -14,6 +15,8 @@
 	PersistenceManager pm = PMF.get().getPersistenceManager();
 	String query = "select from " + GameState.class.getName();
 	List<GameState> games = (List<GameState>) pm.newQuery(query).execute();
+	BullyUser CurrentUser = BullyUser.loggedInUser();
+	
 	
 	if (games.isEmpty())
 	{
@@ -40,8 +43,8 @@
 %>
 <br />
 <form action="/newGame" method="get">
-	<label>Username: </label>
-	<input type="submit" value="Start New Game"/>
+	<label>Username: <%= CurrentUser.getName() %></label>
+	<input type="submit" value="Create New Game"/>
 </form>
 <form action="/newGame" method="post">
 	<label>Player 1</label><input type="text" id="player" name="player">

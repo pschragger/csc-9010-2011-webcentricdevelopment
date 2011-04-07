@@ -5,12 +5,19 @@
 
 package edu.villanova.csc9010.bullygame.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.appengine.api.datastore.Key;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.IdentityType;
+
 
 /*
  * Data object that stores Game IDs and the Player ID if they are playing that game
@@ -93,5 +100,45 @@ public class GamePlayer {
 	{
 		this.color = color;
 	}
+
+	static public List<GamePlayer> findPlayersByGameId(long GameId)
+	{
+		List<GamePlayer> returnList = new ArrayList<GamePlayer>();
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		try {
+		    Query query = pmf.newQuery(GamePlayer.class);
+		    query.setFilter("gameID == userParam");
+		    query.declareParameters("long userParam");
+			returnList = (List<GamePlayer>) query.execute(GameId);
+		
+			if(returnList.size() > 0) return (List<GamePlayer>) returnList;
+		} catch(Exception e) {
+			// If the table does not exist, the read will fail so we need to make the user
+			e.printStackTrace();
+		} finally {
+		    pmf.close();
+		}
+		
+		return returnList;
+	}
 	
+	static public GamePlayer findPlayerByGameIdTurnID(long GameId, int turnNumber)
+	{
+		GamePlayer returnPlayer = null;
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		try {
+		    Query query = pmf.newQuery(GamePlayer.class);
+		    query.setFilter("gameID == userParam && color == userTurn");
+		    query.declareParameters("long userParam, int userTurn");
+		    List<GamePlayer> results = (List<GamePlayer>)query.execute(GameId,turnNumber);
+		    returnPlayer = results.get(0);
+		} catch(Exception e) {
+			// If the table does not exist, the read will fail so we need to make the user
+			e.printStackTrace();
+		} finally {
+		    pmf.close();
+		}
+		
+		return returnPlayer;
+	}
 }

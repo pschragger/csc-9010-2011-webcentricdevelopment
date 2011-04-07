@@ -442,9 +442,7 @@ function checkState()
     var req = new Request({
         method: 'get',
         url: "/bullygame/game?" + QueryString,
-        timeout: 1000,
-        onTimeout: function(){alert("Could not connect to the game server..."); window.clearInterval(Poll); },
-        onComplete: function(responseText) 
+        onSuccess: function(responseText) 
         {
         	//onTimeout still passes the event to onComplete so make sure the response is not null
         	if (responseText!=null)
@@ -462,8 +460,9 @@ function checkState()
 	            	{
 	                	//console.log("new turn number");
 	    	            Cookie.write(CookieTurnNumber,TurnNumber);
-	                	var TurnNumberDiv = document.getElementById("turn"); 
-	    	            TurnNumberDiv.innerHTML = TurnNumber;
+	    	            $('turn').set('html',TurnNumber);
+	                	//var TurnNumberDiv = document.getElementById("turn"); 
+	    	            //TurnNumberDiv.innerHTML = TurnNumber;
 	            	}
 	                
 	                //check total amount of players for change
@@ -481,7 +480,7 @@ function checkState()
 	                
 	                //console.log("overall turn number: " + TurnNumber);
 	                var CurrentTurn = TurnNumber % TotalPlayers;
-	                //console.log("current turn: " + CurrentTurn);
+	                console.log("current turn: " + CurrentTurn);
 	                
 	                
 	                if ((CurrentTurn==PlayerTurnID) && (TotalPlayers>1))
@@ -497,6 +496,7 @@ function checkState()
 	            	}
 	        	}
         	} 
-        }
+        },
+        onFailure: function(){alert("Could not connect to the game server..."); window.clearInterval(Poll); }
       }).send();
 }

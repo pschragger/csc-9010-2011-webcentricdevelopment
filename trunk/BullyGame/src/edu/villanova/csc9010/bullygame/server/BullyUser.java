@@ -128,6 +128,25 @@ public class BullyUser {
 		return null;
 	}
 	
+	public static BullyUser findByUserId(String passedUserID) {
+
+	    PersistenceManager pmf = PMF.get().getPersistenceManager();
+		try {
+		    Query query = pmf.newQuery(BullyUser.class);
+		    query.setFilter("userId == userIdParam");
+		    query.declareParameters("String userIdParam");
+			List<BullyUser> results = (List<BullyUser>) query.execute(passedUserID);
+			
+			if(results.size() > 0) return results.get(0);
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+		    pmf.close();
+		}
+		
+		return null;
+	}
+	
 	public List<Friend> friends() {
 
 	    PersistenceManager pmf = PMF.get().getPersistenceManager();

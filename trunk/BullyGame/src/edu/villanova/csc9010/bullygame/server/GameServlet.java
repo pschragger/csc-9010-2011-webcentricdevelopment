@@ -77,6 +77,7 @@ public class GameServlet  extends HttpServlet
 		//long UserID = Long.parseLong(UserIDString);
 		long UserGameID = Long.parseLong(json.get(JSONGameID).toString());
 		String Nickname = "Error: could not find user's nickname";
+		long alreadyJoinedID = -1;
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		
@@ -87,7 +88,7 @@ public class GameServlet  extends HttpServlet
 		}
 		else
 		{
-			//check to see if need to make a new game state
+			//check to see if need to make a new game state --old shouldn't be called anymore
 			if (UserGameID==-1)
 			{
 				//create a new game
@@ -96,34 +97,56 @@ public class GameServlet  extends HttpServlet
 				UserGameID = G.getKey().getId();
 			}
 			
+			//see if the user has already joined this game
+			/*
 			String query = "select from " + GamePlayer.class.getName();
+			 
 			List<GamePlayer> allplayers = (List<GamePlayer>)pm.newQuery(query).execute();
+			
 			if (!allplayers.isEmpty())
 			{
 				for (GamePlayer thisplayer : allplayers)
 				{
-					System.out.println("***checking " + thisplayer.getUser());
 					if((thisplayer.getUser().equals(UserID)) &&(thisplayer.getGame()==UserGameID))
 					{
 						//player is already part of this game
 						System.out.println("User re-joined an old game");
+						alreadyJoinedID = Long.parseLong(thisplayer.getUser());
 						break;
 					}
 				}
 			}
-			
+			*/
+			List<GamePlayer> allplayers = GamePlayer.findPlayersByGameId(UserGameID);
+			boolean alreadyjoined = false;
+			int alreadyjoinedTurnId = 0;
+			if (!allplayers.isEmpty())
+			{
+				for (GamePlayer thisplayer : allplayers)
+				{
+					if (thisplayer.getUser().equals(UserID))
+					{
+						//do something
+						System.out.println("Already joined");
+						alreadyjoined = true;
+						alreadyjoinedTurnId = thisplayer.getColor();
+					}
+				}
+				
+			}
+			//get game state for this gameid
 			GameState ThisGame = pm.getObjectById(GameState.class, UserGameID);
 			Integer GamePlayersJoined = ThisGame.getNumberPlayersJoined();
 			Integer GameTurnNumber = ThisGame.getTurnNumber();
 			
-			//create a new GamePlayer object
+			//add the user to a game
 			try
 			{
-				//get player's google nickname
+				//get player's google nickname and their playerid
+				/*
 				String query2 = "select from " + BullyUser.class.getName();
 				//String query2 = "select from " + BullyUser.class.getName() + " where userId == " + UserID;
 				List<BullyUser> gameplayers = (List<BullyUser>) pm.newQuery(query2).execute();
-				long alreadyJoinedID = -1;
 				if (!gameplayers.isEmpty())
 				{
 					for (BullyUser player : gameplayers)
@@ -131,25 +154,27 @@ public class GameServlet  extends HttpServlet
 						if (player.getUserId().equals(UserID))
 						{
 							Nickname = player.getName();
-							alreadyJoinedID = player.getId();
 							break;
 						}
 					}
 				}
+				*/
+				BullyUser myBU = BullyUser.findByUserId(UserID);
+				Nickname = myBU.getName();
 			
 				//make sure there are open spots and add a new player
-				if (alreadyJoinedID>=0)
+				if (alreadyjoined)
 				{
 					//user has already joined this game, just fetch game state
 					json.put(JSONGameID, UserGameID);
 					json.put(JSONUserName, Nickname);
 					json.put(JSONTurnNumber, GameTurnNumber);
-					json.put(JSONNumberPlayers, GamePlayersJoined+1);
-					json.put(JSONPlayerTurnID, GamePlayersJoined);
+					json.put(JSONNumberPlayers, GamePlayersJoined);
+					json.put(JSONPlayerTurnID, alreadyjoinedTurnId);
 					
 					Response = json.toJSONString();
 				}
-				else if (GamePlayersJoined<MaxPlayers) 
+				else if ((GamePlayersJoined<MaxPlayers) &&(!alreadyjoined)) 
 				{
 					//Create 4 pawns at position 0 for this player/color/game combo
 					for (int pNum=0;pNum<4;pNum++)
@@ -304,9 +329,9 @@ public class GameServlet  extends HttpServlet
 		Integer CurrentPlayerTurn = (TurnNumber % TotalPlayers);
 		
 		//get list of game players
-		String query = "select from " + GamePlayer.class.getName() + " where gameID==" + GameID;
-		List<GamePlayer> Players = (List<GamePlayer>) pm.newQuery(query).execute();
-		if (Players.isEmpty())
+		//String query = "select from " + GamePlayer.class.getName() + " where gameID==" + GameID;
+		//List<GamePlayer> Players = (List<GamePlayer>) pm.newQuery(query).execute();
+		/*if (Players.isEmpty())
 		{
 			System.out.println("No players returned");
 		}
@@ -317,13 +342,14 @@ public class GameServlet  extends HttpServlet
 				System.out.println(gm.getUser() + " is color " + gm.getColor());
 			}
 		}
-		
+		*/
 		//find out whose turn it is
-		String CurrentPlayer = Players.get(CurrentPlayerTurn).getUser();
+		GamePlayer CurrentPlayer = GamePlayer.findPlayerByGameIdTurnID(GameID, CurrentPlayerTurn);
+		String CurrentPlayerID = CurrentPlayer.getUser();
 		
 		//check to see if proposed move is valid
 		String Response = null;
-		boolean ValidMove = CurrentPlayer.equals(PlayerID);
+		boolean ValidMove = CurrentPlayerID.equals(PlayerID);
 		boolean Roll1 = DiceRoll1.equals(ThisGame.getDie1());
 		boolean Roll2 = DiceRoll2.equals(ThisGame.getDie2());
 		
@@ -338,15 +364,9 @@ public class GameServlet  extends HttpServlet
 			
 			//determine next turn
 			String NextPlayer;
-			CurrentPlayerTurn++;
-			if (CurrentPlayerTurn==MaxPlayers)
-			{
-				NextPlayer = Players.get(0).getUser();
-			}
-			else
-			{
-				NextPlayer = Players.get(CurrentPlayerTurn).getUser();
-			}
+			CurrentPlayerTurn= (++CurrentPlayerTurn)%MaxPlayers;
+			NextPlayer = GamePlayer.findPlayerByGameIdTurnID(GameID, CurrentPlayerTurn).getUser();//Players.get(CurrentPlayerTurn).getUser();
+			
 			ThisGame.setCurrentPlayer(NextPlayer);
 			System.out.println(NextPlayer + "'s turn is next");
 		}

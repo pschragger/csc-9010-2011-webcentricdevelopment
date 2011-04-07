@@ -61,6 +61,7 @@ public class createGameServlet extends HttpServlet {
 	{
 		Cookie[] UserCookies = req.getCookies();
 		String[] myCookie = null;
+		
 		if (UserCookies!=null)
 		{
 			for (int i=0; i<UserCookies.length; i++)
