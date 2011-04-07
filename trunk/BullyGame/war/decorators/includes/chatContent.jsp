@@ -8,10 +8,12 @@
 <%@ page import="edu.villanova.csc9010.bullygame.server.PMF" %>
 
 <% List<Greeting> greetings = Greeting.findAll(); %>
+<% Calendar calendar = Calendar.getInstance(); %>
 <% for(Greeting greeting : greetings) { %>
   <% if(greeting.getAuthor() == null) continue; %>
   <p>
-    <span class='chatDate'>[<%= greeting.getDate().getHours() %>:<%= greeting.getDate().getMinutes() %>]</span>
+    <% calendar.setTime(greeting.getDate()); %>
+    <span class='chatDate'>[<%= calendar.get(Calendar.HOUR) < 10 ? "0" : "" %><%= calendar.get(Calendar.HOUR) %>:<%= calendar.get(Calendar.MINUTE) %>]</span>
     <span class='chatName'><%= greeting.getAuthor().getNickname() %></span>:
     <span class='chatMessage'><%= greeting.getContent() %></span>
   </p>
