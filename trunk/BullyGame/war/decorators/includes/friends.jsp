@@ -6,4 +6,5 @@
       <label>Email: </label>
       <input type='text' name='email' />
       <input type='submit' />
+    </form>
   </div>

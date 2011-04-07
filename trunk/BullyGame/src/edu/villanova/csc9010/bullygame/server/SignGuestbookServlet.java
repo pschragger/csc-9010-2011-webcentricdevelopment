@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
+
+import org.mortbay.jetty.Request;
+
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -30,6 +34,10 @@ public class SignGuestbookServlet extends HttpServlet {
             pm.close();
         }
 
-        resp.sendRedirect("/decorators/includes/guestbook.jsp");
+        try {
+            req.getRequestDispatcher("/decorators/includes/chatContent.jsp").forward(req, resp);
+        } catch(ServletException e) {
+            e.printStackTrace();
+        }
     }
 }
