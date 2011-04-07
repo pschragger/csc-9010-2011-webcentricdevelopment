@@ -31,7 +31,7 @@ function createSquare(x, y, size, id, type, color)
 					if (dist) console.log(this.id+": dist="+dist);
 				if (dist && dist <= GameState.movesLeft) {
 					// TODO: update action display div
-					this.strokeStyle = COLORS[YELLOW];					
+					this.strokeStyle = COLORS[YELLOW];
 				}
 			},
 			onMouseout : function(){
@@ -40,11 +40,13 @@ function createSquare(x, y, size, id, type, color)
 			onClick : function() {
 				var dist = this.distFromSelection();
 				if (dist && dist <= GameState.movesLeft) {
-					// move pawn
+					GameState.selectedPawn.moveTo(this);
+					GameState.selectedPawn.deselect();
 					// TODO: update movesLeft display div
 				}
 			}
 		},
+		// Returns distance from selected pawn to this, null if unreachable 
 		distFromSelection : function () {
 			if (!GameState.selectedPawn || !(this.type==OUTER_SQUARE || this.type==INNER_SQUARE)) 
 				return null;			
@@ -54,7 +56,7 @@ function createSquare(x, y, size, id, type, color)
 					return null;
 				return ( this.getValue()+(PATH_ENDS[GameState.selectedPawn.cIndex]-begin).mod(NUM_OUTER_SQUARES) ); 
 			}
-			var dist = (this.getValue()-begin).mod(NUM_OUTER_SQUARES);
+			var dist = (this.getValue()-begin).mod(NUM_OUTER_SQUARES);				
 			// Check if this is reachable (if it's not after the pawn's color path)
 			if (!this.isValBetween(PATH_ENDS[GameState.selectedPawn.cIndex],begin))				
 				return dist;

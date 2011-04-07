@@ -1,5 +1,7 @@
 <html>
 <head>
+	<script type="text/javascript" async="" src="http://www.google-analytics.com/ga.js"></script>
+	<script type="text/javascript" src="js/lib/mootools-yui-compressed.js"></script>
     <script type="text/javascript" src="/js/lib/mcl-min.js"></script>
 	<script type="text/javascript" src="/js/dice.js"></script>
 	<script type="text/javascript" src="/js/square.js"></script>  
@@ -10,7 +12,6 @@
    	<script type="text/javascript"> 	
 		$(window).addEvent('load',function(){
 			setUpBoard();
-			//initq();
    		});
    	</script>
 
@@ -22,7 +23,7 @@
   	<br/>
   	<input id="diceButton" type="button" value="Roll Dice" onclick="beginTurn()">
   	<br/>
-  	<canvas id="canvas" style="z-index: 2;" width="625" height="625"></canvas>   
+  	<canvas id="boardCanvas" style="z-index: 2;" width="625" height="625"></canvas>   
 	<br/>
       	
 	<audio id="diceroll" src="/audio/diceroll1.wav" preload="auto"/>
