@@ -9,6 +9,7 @@ import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.Query;
 
 
 
@@ -16,7 +17,7 @@ import javax.jdo.annotations.PrimaryKey;
 public class GameState {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private long key;
+	private Long key;
 	
 	@Persistent
 	private Date startDate;
@@ -167,5 +168,18 @@ public class GameState {
 	{
 		Die1 = DieOne;
 		Die2 = DieTwo;
+	}
+	
+	/**
+	 * query database and return all GameState objects
+	 */
+	public static List<GameState> getAllGames()
+	{
+		List<GameState> gameState = null;
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		Query query = pmf.newQuery(GameState.class);
+		gameState = (List<GameState>) query.execute();
+		
+		return gameState;
 	}
 }

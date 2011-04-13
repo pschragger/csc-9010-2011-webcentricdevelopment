@@ -6,12 +6,6 @@
 
 <html>
   <body>
-  <!-- 
-  	Not logged in -  welcome, please login
-  	
-  	Logged in - List active games, inactive games, active friends, create a new game
-  
-   -->
    Welcome to the Bully Game.
    <%
    //check if user is logged in
@@ -90,6 +84,12 @@
 	   %></div><%
 	   
 	   //start a new game
+	   %>
+	   <form action="/newGame" method="post">
+	   	<input type="hidden" value="<%= user.getId() %>" name="player">
+	   	<input type="submit" value="Create New Game">
+	   </form>
+	   <%
    }
    else
    {
