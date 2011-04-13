@@ -230,25 +230,28 @@ public class BullyUser {
 	{
 		List<GameState> gameStates = null;
 		List<GamePlayer> games = this.allGames();
-		for (GamePlayer game : games)
+		if (games != null)
 		{
-			PersistenceManager pmf = PMF.get().getPersistenceManager();
-			try
+			for (GamePlayer game : games)
 			{
-				Query query = pmf.newQuery(GameState.class);
-				query.setFilter("key == userParam, active == userActive");
-				query.declareParameters("long userParam, boolean userActive");
-				List<GameState> gm = (List<GameState>) query.execute(game, false);
-				
-				gameStates.add(gm.get(0));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-			finally
-			{
-				pmf.close();
+				PersistenceManager pmf = PMF.get().getPersistenceManager();
+				try
+				{
+					Query query = pmf.newQuery(GameState.class);
+					query.setFilter("key == userParam, active == userActive");
+					query.declareParameters("long userParam, boolean userActive");
+					List<GameState> gm = (List<GameState>) query.execute(game, false);
+					
+					gameStates.add(gm.get(0));
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+				finally
+				{
+					pmf.close();
+				}
 			}
 		}
 		
