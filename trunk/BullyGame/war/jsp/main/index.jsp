@@ -12,10 +12,21 @@
    if (BullyUser.isLoggedIn())
    {
 	   BullyUser user = BullyUser.loggedInUser();
+	   int allGames = 0;
+	   List all = user.allGames();
 	   
+	   if(all != null)
+	   {
+		   allGames = all.size();
+	   }   
+	   
+	   %>Found <%=allGames %> games for this user<%
 	   //display active games
 	   %>
 	   <div id="activeGames">
+	   	<div class="title">
+	   		Active Games
+	   	</div>
 	   <%
 	   List<GameState> aGames = user.activeGames();
 	   
@@ -38,6 +49,7 @@
 	   <%
 	   
 	   //display inactive games
+	   
 	   List<GameState> iGames = user.inactiveGames();
 	   
 	   if (iGames != null)

@@ -167,6 +167,10 @@ public class BullyUser {
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @return List of all active and inactive GamePlayer objects that the BullyUser belongs to.
+	 */
 	public List<GamePlayer> allGames()
 	{
 		PersistenceManager pmf = PMF.get().getPersistenceManager();
@@ -195,7 +199,7 @@ public class BullyUser {
 	//get active games for this BullyUser. returns null if no active games.
 	public List<GameState> activeGames()
 	{
-		List<GameState> gameStates = null;
+		List<GameState> gameStates = new ArrayList<GameState>();
 		List<GamePlayer> games = this.allGames();
 		if(games != null)
 		{
@@ -205,11 +209,13 @@ public class BullyUser {
 				try
 				{
 					Query query = pmf.newQuery(GameState.class);
-					query.setFilter("key == userParam, active == userActive");
-					query.declareParameters("long userParam, boolean userActive");
-					List<GameState> gm = (List<GameState>) query.execute(game, true);
+					query.setFilter("key == userParam && active == "+true);
+					query.declareParameters("long userParam");
+					List<GameState> gm = (List<GameState>) query.execute(game.getGame());
 					
-					gameStates.add(gm.get(0));
+					if (gm.size() > 0)
+						gameStates.add(gm.get(0));
+					
 				}
 				catch (Exception e)
 				{
@@ -228,7 +234,7 @@ public class BullyUser {
 	//get inactive games for this BullyUser. returns null if no inactive games.
 	public List<GameState> inactiveGames()
 	{
-		List<GameState> gameStates = null;
+		List<GameState> gameStates = new ArrayList<GameState>();
 		List<GamePlayer> games = this.allGames();
 		if (games != null)
 		{
@@ -238,11 +244,12 @@ public class BullyUser {
 				try
 				{
 					Query query = pmf.newQuery(GameState.class);
-					query.setFilter("key == userParam, active == userActive");
+					query.setFilter("key == userParam && active == userActive");
 					query.declareParameters("long userParam, boolean userActive");
-					List<GameState> gm = (List<GameState>) query.execute(game, false);
+					List<GameState> gm = (List<GameState>) query.execute(game.getGame(), false);
 					
-					gameStates.add(gm.get(0));
+					if (gm.size() > 0)
+						gameStates.add(gm.get(0));
 				}
 				catch (Exception e)
 				{

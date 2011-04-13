@@ -26,7 +26,7 @@ public class GameState {
 	private long currentPlayer;	//long currentPlayer;
 	
 	@Persistent
-	private boolean active;
+	private Boolean active;
 	
 	@Persistent
 	private long winner;
@@ -81,7 +81,7 @@ public class GameState {
 		return currentPlayer;
 	}
 	
-	public boolean getActive()
+	public Boolean getActive()
 	{
 		return active;
 	}
@@ -128,7 +128,7 @@ public class GameState {
 		currentPlayer = cp;
 	}
 	
-	public void setActive(boolean a)
+	public void setActive(Boolean a)
 	{
 		active = a;
 	}
@@ -180,6 +180,9 @@ public class GameState {
 		Query query = pmf.newQuery(GameState.class);
 		gameState = (List<GameState>) query.execute();
 		
-		return gameState;
+		if(gameState != null)
+			return gameState;
+		else
+			return null;
 	}
 }
