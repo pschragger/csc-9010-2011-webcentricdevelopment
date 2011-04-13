@@ -73,7 +73,7 @@ public class GameServlet  extends HttpServlet
 		
 		//parse the string into a json object
 		JSONObject json = parseJSON(jsonContent);
-		String UserID = json.get(JSONPlayerID).toString();
+		long UserID = Long.parseLong(json.get(JSONPlayerID).toString());
 		//long UserID = Long.parseLong(UserIDString);
 		long UserGameID = Long.parseLong(json.get(JSONGameID).toString());
 		String Nickname = "Error: could not find user's nickname";
@@ -82,7 +82,7 @@ public class GameServlet  extends HttpServlet
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		
 		//check the user id
-		if (UserID.equals("-1"))
+		if (UserID == -1)
 		{
 			Response = "{\"Status\":\"Invalid PlayerID given\"}";
 		}
@@ -124,7 +124,7 @@ public class GameServlet  extends HttpServlet
 			{
 				for (GamePlayer thisplayer : allplayers)
 				{
-					if (thisplayer.getUser().equals(UserID))
+					if (thisplayer.getUser() == UserID)
 					{
 						//do something
 						System.out.println("Already joined");
@@ -315,7 +315,7 @@ public class GameServlet  extends HttpServlet
 		//parse the string into a json object
 		JSONObject json = parseJSON(jsonContent);
 		long GameID = Long.parseLong(json.get(JSONGameID).toString());
-		String PlayerID = json.get(JSONPlayerID).toString();
+		long PlayerID = Long.parseLong(json.get(JSONPlayerID).toString());
 		
 		//get turn info
 		Integer DiceRoll1 = Integer.parseInt(json.get(JSONDiceRoll1).toString());
@@ -345,11 +345,11 @@ public class GameServlet  extends HttpServlet
 		*/
 		//find out whose turn it is
 		GamePlayer CurrentPlayer = GamePlayer.findPlayerByGameIdTurnID(GameID, CurrentPlayerTurn);
-		String CurrentPlayerID = CurrentPlayer.getUser();
+		long CurrentPlayerID = CurrentPlayer.getUser();
 		
 		//check to see if proposed move is valid
 		String Response = null;
-		boolean ValidMove = CurrentPlayerID.equals(PlayerID);
+		boolean ValidMove = (CurrentPlayerID == PlayerID);
 		boolean Roll1 = DiceRoll1.equals(ThisGame.getDie1());
 		boolean Roll2 = DiceRoll2.equals(ThisGame.getDie2());
 		
@@ -363,7 +363,7 @@ public class GameServlet  extends HttpServlet
 			ThisGame.setTurnNumber(1 + TurnNumber);
 			
 			//determine next turn
-			String NextPlayer;
+			long NextPlayer;
 			CurrentPlayerTurn= (++CurrentPlayerTurn)%MaxPlayers;
 			NextPlayer = GamePlayer.findPlayerByGameIdTurnID(GameID, CurrentPlayerTurn).getUser();//Players.get(CurrentPlayerTurn).getUser();
 			
