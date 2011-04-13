@@ -16,7 +16,7 @@ import javax.jdo.annotations.PrimaryKey;
 public class GameState {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private long key;
 	
 	@Persistent
 	private Date startDate;
@@ -61,30 +61,11 @@ public class GameState {
 		this.Die1 = 0;
 		this.Die2 = 0;
 	}
-
-	/**
-	 * Create a new Game object
-	 * @param key unique identifier
-	 * @param s Date the game was started
-	 * @param cp the email of the player who is currently making a move
-	 * @param w the email of the winner of the game
-	 * @param ed the end date
-	 * @param a true if active, false if not
-	 */
-	public GameState(Key key, Date s, long cp, long w, Date ed, boolean a)
-	{
-		this.key = key;
-		this.startDate = s;
-		this.currentPlayer = cp;
-		this.winner = w;
-		this.endDate = ed;
-		this.active = a;
-	}
 	
 	
 	//getters
 	
-	public Key getKey()
+	public long getKey()
 	{
 		return key;
 	}	
@@ -165,7 +146,7 @@ public class GameState {
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		String query;
-		query = "select from "+GamePlayer.class.getName()+" where user = "+this.key.getId();
+		query = "select from "+GamePlayer.class.getName()+" where user = "+this.key;
 		
 		List<GamePlayer> gp = (List<GamePlayer>) pm.newQuery(query);
 		

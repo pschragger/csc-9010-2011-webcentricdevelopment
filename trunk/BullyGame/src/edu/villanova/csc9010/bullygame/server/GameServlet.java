@@ -54,7 +54,7 @@ public class GameServlet  extends HttpServlet
 		{
 			//store GameState
 			pm.makePersistent(game);
-			gKey = game.getKey().getId();
+			gKey = game.getKey();
 			ThisKey = gKey;
 			game.setTurnNumber(-1);
 		}
@@ -94,7 +94,7 @@ public class GameServlet  extends HttpServlet
 				//create a new game
 				GameState G = new GameState();
 				pm.makePersistent(G);
-				UserGameID = G.getKey().getId();
+				UserGameID = G.getKey();
 			}
 			
 			//see if the user has already joined this game

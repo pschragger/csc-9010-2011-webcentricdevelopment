@@ -24,7 +24,7 @@ public class createGameServlet extends HttpServlet {
 		{
 			//store GameState
 			pm.makePersistent(game);
-			gKey = game.getKey().getId();
+			gKey = game.getKey();
 			
 			//store players for game
 			for (String player : pl)
