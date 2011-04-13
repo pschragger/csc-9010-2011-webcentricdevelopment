@@ -73,7 +73,8 @@ public class GameServlet  extends HttpServlet
 		
 		//parse the string into a json object
 		JSONObject json = parseJSON(jsonContent);
-		long UserID = Long.parseLong(json.get(JSONPlayerID).toString());
+		String UserID = json.get(JSONPlayerID).toString();
+		//Long UserID = Long.parseLong(PlayerID.trim());
 		//long UserID = Long.parseLong(UserIDString);
 		long UserGameID = Long.parseLong(json.get(JSONGameID).toString());
 		String Nickname = "Error: could not find user's nickname";
@@ -82,7 +83,7 @@ public class GameServlet  extends HttpServlet
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		
 		//check the user id
-		if (UserID == -1)
+		if (UserID.equals("-1"))
 		{
 			Response = "{\"Status\":\"Invalid PlayerID given\"}";
 		}
@@ -98,33 +99,16 @@ public class GameServlet  extends HttpServlet
 			}
 			
 			//see if the user has already joined this game
-			/*
-			String query = "select from " + GamePlayer.class.getName();
-			 
-			List<GamePlayer> allplayers = (List<GamePlayer>)pm.newQuery(query).execute();
 			
-			if (!allplayers.isEmpty())
-			{
-				for (GamePlayer thisplayer : allplayers)
-				{
-					if((thisplayer.getUser().equals(UserID)) &&(thisplayer.getGame()==UserGameID))
-					{
-						//player is already part of this game
-						System.out.println("User re-joined an old game");
-						alreadyJoinedID = Long.parseLong(thisplayer.getUser());
-						break;
-					}
-				}
-			}
-			*/
 			List<GamePlayer> allplayers = GamePlayer.findPlayersByGameId(UserGameID);
+			long CurrentPlayerId = BullyUser.loggedInUser().getId();
 			boolean alreadyjoined = false;
 			int alreadyjoinedTurnId = 0;
 			if (!allplayers.isEmpty())
 			{
 				for (GamePlayer thisplayer : allplayers)
 				{
-					if (thisplayer.getUser() == UserID)
+					if (thisplayer.getUser() == CurrentPlayerId)
 					{
 						//do something
 						System.out.println("Already joined");
@@ -143,23 +127,7 @@ public class GameServlet  extends HttpServlet
 			try
 			{
 				//get player's google nickname and their playerid
-				/*
-				String query2 = "select from " + BullyUser.class.getName();
-				//String query2 = "select from " + BullyUser.class.getName() + " where userId == " + UserID;
-				List<BullyUser> gameplayers = (List<BullyUser>) pm.newQuery(query2).execute();
-				if (!gameplayers.isEmpty())
-				{
-					for (BullyUser player : gameplayers)
-					{
-						if (player.getUserId().equals(UserID))
-						{
-							Nickname = player.getName();
-							break;
-						}
-					}
-				}
-				*/
-				BullyUser myBU = BullyUser.findByUserId(UserID);
+				BullyUser myBU = BullyUser.loggedInUser();
 				Nickname = myBU.getName();
 			
 				//make sure there are open spots and add a new player
@@ -183,13 +151,13 @@ public class GameServlet  extends HttpServlet
 					}
 	
 					//Create Game/Player association
-					pm.makePersistent(new GamePlayer(UserGameID, UserID, GamePlayersJoined,1));
+					pm.makePersistent(new GamePlayer(UserGameID, CurrentPlayerId, GamePlayersJoined,1));
 					
 					//update the game state
 					ThisGame.setNumberPlayers(GamePlayersJoined+1);
 					if (GamePlayersJoined==0)
 					{
-						ThisGame.setCurrentPlayer(UserID);
+						ThisGame.setCurrentPlayer(CurrentPlayerId);
 					}
 					
 					//check to see if game if now full
@@ -442,11 +410,13 @@ public class GameServlet  extends HttpServlet
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
               throws IOException
     {
+		/*
 		//make sure game is initialized
 		if (PlayersArray==null)
 		{
 			startGame();
 		}
+		*/
 		
     	//set response error by default, change if content != null
         String returnString = null;
@@ -532,10 +502,12 @@ public class GameServlet  extends HttpServlet
 	{
 		//make sure game is initialized
 		long gKey;
+		/*
 		if (PlayersArray==null)
 		{
 			gKey = startGame();
 		}
+		*/
 		
 		//set response error by default, change if content != null
         String returnString = null;
@@ -568,10 +540,12 @@ public class GameServlet  extends HttpServlet
 	{
 		//make sure game is initialized
 		long gKey = -1;
+		/*
 		if (PlayersArray==null)
 		{
 			gKey = startGame();
 		}
+		*/
 		
 		//set response error by default, change if content != null
         String returnString = "{\"Status\":\"Error: Request action not caught in POST\"}";
@@ -589,10 +563,6 @@ public class GameServlet  extends HttpServlet
         	String jsonContent = request.getParameter("content");
             returnString = addPlayer(jsonContent, gKey);
             
-            if (PlayersArray.length==MaxPlayers)
-            {
-            	//start the game
-            }
     	}
         else if (Command.compareTo("playTurn")==0)
         {
@@ -615,11 +585,12 @@ public class GameServlet  extends HttpServlet
 		throws IOException
 	{
 		//make sure game is initialized
+		/*
 		if (PlayersArray==null)
 		{
 			startGame();
 		}
-		
+		*/
 		//set response error by default, change if content != null
         String returnString = null;
         response.setContentType("application/xhtml+xml");

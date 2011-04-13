@@ -77,7 +77,7 @@ public class createGameServlet extends HttpServlet {
 		}
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		
-		String newURL = "/ClientTest.html?username=" + myCookie[2];
+		String newURL = "/jsp/game/game.jsp?username=" + myCookie[2];
 		System.out.println("New URL is " + newURL);
 		resp.sendRedirect(newURL);
 	}
