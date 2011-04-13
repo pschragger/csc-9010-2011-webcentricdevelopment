@@ -167,6 +167,91 @@ public class BullyUser {
 		return null;
 	}
 	
+	public List<GamePlayer> allGames()
+	{
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		try
+		{
+			Query query = pmf.newQuery(GamePlayer.class);
+			query.setFilter("user == userParam");
+			query.declareParameters("long userParam");
+			List<GamePlayer> games = (List<GamePlayer>) query.execute(this.id);
+			
+			if (games.size() > 0)
+				return games;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			pmf.close();
+		}
+		
+		return null;
+	}
+	
+	//get active games for this BullyUser. returns null if no active games.
+	public List<GameState> activeGames()
+	{
+		List<GameState> gameStates = null;
+		List<GamePlayer> games = this.allGames();
+		for (GamePlayer game : games)
+		{
+			PersistenceManager pmf = PMF.get().getPersistenceManager();
+			try
+			{
+				Query query = pmf.newQuery(GameState.class);
+				query.setFilter("key == userParam, active == userActive");
+				query.declareParameters("long userParam, boolean userActive");
+				List<GameState> gm = (List<GameState>) query.execute(game, true);
+				
+				gameStates.add(gm.get(0));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				pmf.close();
+			}
+		}
+		
+		return gameStates;
+	}
+	
+	//get inactive games for this BullyUser. returns null if no inactive games.
+	public List<GameState> inactiveGames()
+	{
+		List<GameState> gameStates = null;
+		List<GamePlayer> games = this.allGames();
+		for (GamePlayer game : games)
+		{
+			PersistenceManager pmf = PMF.get().getPersistenceManager();
+			try
+			{
+				Query query = pmf.newQuery(GameState.class);
+				query.setFilter("key == userParam, active == userActive");
+				query.declareParameters("long userParam, boolean userActive");
+				List<GameState> gm = (List<GameState>) query.execute(game, false);
+				
+				gameStates.add(gm.get(0));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				pmf.close();
+			}
+		}
+		
+		return gameStates;
+	}
+	
 	public static long playerCount() {
 		return 0;
 	}
