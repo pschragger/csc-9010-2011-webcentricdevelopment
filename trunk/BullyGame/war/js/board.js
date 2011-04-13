@@ -358,6 +358,9 @@ function setUpBoard()
     }));
     
 //    console.log(myThread);
+    
+    //get the game id and player id and join an active game
+    joinGame();
 } // end setUpBoard()
 
 function takeTurnWithDice(roll)
