@@ -97,7 +97,7 @@
 	   
 	   //start a new game
 	   %>
-	   <form action="/newGame" method="post">
+	   <form action="/jsp/game/game.jsp?username=<%= user.getId() %>&gameid=-1" >
 	   	<input type="hidden" value="<%= user.getId() %>" name="player">
 	   	<input type="submit" value="Create New Game">
 	   </form>

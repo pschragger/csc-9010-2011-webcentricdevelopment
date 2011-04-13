@@ -141,11 +141,7 @@ function joinGame()
 {
 	//get the player's username and game id from the query string	
 	var username = (Cookie.read(CookiePlayerID)!=null)?Cookie.read(CookiePlayerID):gup("username");
-	if (username=="")
-	{
-		username = "-1";
-	}
-	else if (username=="0")
+	if ((username=="") || (username=="0"))
 	{
 		var cookieArray = Cookie.read("dev_appserver_login").split(":");
 		username = cookieArray[2];
@@ -157,8 +153,8 @@ function joinGame()
 	}
 	  
 	//update the player name on the board
-    var UsernameSpan = document.getElementById("playername");
-    UsernameSpan.innerHTML = username;
+    //var UsernameSpan = document.getElementById("playername");
+    //UsernameSpan.innerHTML = username;
 	  
 	//create the json object query string
 	var objJSON = 
@@ -167,6 +163,7 @@ function joinGame()
 			"GameID"	: GameID
 	};
 	var strJSON = JSON.encode(objJSON);
+	console.log("JSON: " + strJSON);
 	
 	//create HTTP Request
 	var QueryString = "action=joinGame&content=" + strJSON;
@@ -191,13 +188,15 @@ function joinGame()
 	            Cookie.write(CookieUserName,UserName);
 	            
 	            //update the number of players
-	            var TotalPlayers = document.getElementById("numplayers");
-	            TotalPlayers.innerHTML = receivedJSON.NumberPlayers;
+	            $('numplayers').set('html',receivedJSON.NumberPlayers);
 	            var MaxPlayers = Cookie.write(CookieTotalPlayers,receivedJSON.NumberPlayers);
 	            
 	            //update user name
-	            var UserNameDiv = document.getElementById("playername");
-	            UserNameDiv.innerHTML = UserName;
+	            //var UserNameDiv = document.getElementById("playername");
+	            //UserNameDiv.innerHTML = UserName;
+	            
+	            //disable the roll dice button until all players join
+	            $('diceButton').disabled=true;
 	            
 	            //start polling the server
 	            Poll = self.setInterval("checkState()",3000);
@@ -206,7 +205,10 @@ function joinGame()
         	{
             	alert("There are no openings in this game, please join a new one.");
         	}
-        }
+        },
+        onFailure: function(){
+	        alert("Error communicating with server.");
+	    }
       }).send();
 }
 
@@ -254,110 +256,34 @@ function getCard()
 		    var DiceRoll1 = receivedJSON.DiceRoll1;
 		    var DiceRoll2 = receivedJSON.DiceRoll2;
 		    
+		    //disable the roll button until next turn
+		    $('diceButton').disabled=true;
+		    		    
 		    //display a new card
-		    var NewCard = document.getElementById("NewCard");
-		    NewCard.src = CardURL;
+		    //var NewCard = document.getElementById("NewCard");
+		    //NewCard.src = CardURL;
 		    
 		    //update the dice
-		    var Dice1 = document.getElementById("Dice1");
-		    var Dice2 = document.getElementById("Dice2");
-	        Dice1.innerHTML = DiceRoll1;
-	        Dice2.innerHTML = DiceRoll2;
+            setDice(DiceRoll1,DiceRoll2);
+            // temp (3/23)
+            takeTurnWithDice(DiceRoll1+DiceRoll2);
 	        
 	        //enable the play card button
+            /*
 	        Cookie.write(CookieMyTurn,"Play");
 	        var DrawCardButtonDiv = document.getElementById("DrawCardButton");
 	        var PlayCardButtonDiv = document.getElementById("PlayCardButton");
 	        DrawCardButtonDiv.disabled=true;
 	        PlayCardButtonDiv.disabled=false;
-        }
-      }).send();
+	        */
+        },
+		onFailure: function(){
+			alert("Error communicating with server.");
+		}
+	}).send();
 }
 
 //sends a request to the server to use a card
-/*
-function playTurn()
-{
-	if (Cookie.read("MyTurn")=="Play")
-	{
-		function servletCallback()
-	    {
-	    	//make sure ready state = 4 and status = 200 (OK)
-	    	if ((req.readyState==4) &&(req.status==200))
-	        {
-	            //console.log("useCard callback received...");
-	            
-	            //decode the json and put it in an object
-	            var receivedJSON = JSON.decode(req.responseText);
-	            
-	            //create the new html from the json's data
-	            var Status = receivedJSON.Status
-	            
-	            //display a new card
-	            if (Status=="Valid")
-	        	{
-	            	alert("roll was validated by the server.");
-	            	Cookie.write("MyTurn","No");
-	            	var PlayCardButtonDiv = document.getElementById("PlayCardButton");
-	            	PlayCardButtonDiv.disabled=true;
-	        	}
-	        }
-	    }
-	
-	    function callServlet()
-	    {
-	      //get the session variables
-	      checkCookies();
-	      var GameID = Cookie.read("gameid");
-	      var PlayerID = Cookie.read("playerid");
-	      
-	      //get the dice rolls
-	      var Die1 = parseInt(document.getElementById("Dice1").innerHTML);
-	      var Die2 = parseInt(document.getElementById("Dice2").innerHTML);
-	      
-	      //get pawn moves
-	      var pNumberArray = [1];
-	      var pStartArray = [0];
-	      var pEndArray = [5];
-	      
-	      //create the JSON object
-	      var objJSON =
-	      {
-	        "GameID" : GameID,
-	        "CardNumber" : CardNumber,
-	        "PlayerID" : PlayerID,
-	        "DiceRoll1" : Die1,
-	        "DiceRoll2" : Die2,
-	        "Moves" : 
-	        	{
-	        		"PawnNumber" : pNumberArray,
-	        		"StartSpace" : pStartArray,
-	        		"EndSpace" : pEndArray
-	        	}
-	      };
-	
-	      var strJSON = JSON.encode(objJSON);
-	      //console.log("JSON sent: " + strJSON);
-	      
-	      //create and send the http request
-	      var QueryString = "action=playTurn&content=" + strJSON;
-	      req.open("PUT", "/bullygame/game?" + QueryString, true);
-	      req.send(null);
-	     
-	    }
-	
-	    //create a new request & set its event handler
-	    req = new XMLHttpRequest();
-	    req.onreadystatechange = servletCallback;
-	    
-	    //determine the card number
-	    var CardNumber = 1;
-	    
-	    //send the request
-	    callServlet();
-	}
-}
-*/
 function playTurn()
 {
 	//get the session variables
@@ -470,8 +396,7 @@ function checkState()
 	                if (TotalPlayers!=Cookie.read(CookieTotalPlayers))
 	            	{
 	    		        Cookie.write(CookieTotalPlayers,TotalPlayers);
-	    		        var TotalPlayersDiv = document.getElementById("numplayers");
-	    		        TotalPlayersDiv.innerHTML = TotalPlayers;
+	    		        $('numplayers').set('html',TotalPlayers);
 	            	}
 	                
 	                //check if its now your turn
@@ -480,7 +405,7 @@ function checkState()
 	                
 	                //console.log("overall turn number: " + TurnNumber);
 	                var CurrentTurn = TurnNumber % TotalPlayers;
-	                console.log("current turn: " + CurrentTurn);
+	                //console.log("current turn: " + CurrentTurn);
 	                
 	                
 	                if ((CurrentTurn==PlayerTurnID) && (TotalPlayers>1))
@@ -490,8 +415,8 @@ function checkState()
 	                	if (Cookie.read(CookieMyTurn)=="No")
 	            		{
 	            			Cookie.write(CookieMyTurn,"Draw");
-	                    	var DrawCardButtonDiv = document.getElementById("DrawCardButton");
-	                    	DrawCardButtonDiv.disabled = false;
+	            			$('diceButton').disabled=false;
+	            			$('status').set('html',"Your Turn");
 	                	}
 	            	}
 	        	}
