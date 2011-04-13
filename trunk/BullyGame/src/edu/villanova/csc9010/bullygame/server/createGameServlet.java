@@ -31,6 +31,7 @@ public class createGameServlet extends HttpServlet {
 			{
 				if (player != null && player.trim() != "")
 				{
+					long playerId = Long.parseLong(player);
 					//Assign player color from 0 to 3
 					if (color == 3)
 						color = 0;
@@ -44,7 +45,7 @@ public class createGameServlet extends HttpServlet {
 					}
 	
 					//Create Game/Player association
-					pm.makePersistent(new GamePlayer(gKey, player, color,1));
+					pm.makePersistent(new GamePlayer(gKey, playerId, color,1));
 				}
 			}
 			

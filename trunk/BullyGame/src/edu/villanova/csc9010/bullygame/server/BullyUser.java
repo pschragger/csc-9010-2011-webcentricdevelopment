@@ -128,13 +128,13 @@ public class BullyUser {
 		return null;
 	}
 	
-	public static BullyUser findByUserId(String passedUserID) {
+	public static BullyUser findByUserId(long passedUserID) {
 
 	    PersistenceManager pmf = PMF.get().getPersistenceManager();
 		try {
 		    Query query = pmf.newQuery(BullyUser.class);
-		    query.setFilter("userId == userIdParam");
-		    query.declareParameters("String userIdParam");
+		    query.setFilter("id == userIdParam");
+		    query.declareParameters("long userIdParam");
 			List<BullyUser> results = (List<BullyUser>) query.execute(passedUserID);
 			
 			if(results.size() > 0) return results.get(0);
