@@ -14,9 +14,6 @@
 		$(window).addEvent('load',function(){
 			setUpBoard();
    		});
-		$(window).addEvent('unload',function(){
-			clearGameCookies();
-		},false);
    	</script>
 
    	
@@ -26,9 +23,11 @@
   	<div style="width: 200px; float: right; border:3px solid black;">
 		Number of Players: <span id="numplayers">1</span>
 		<br/>
-		Turn # <span id="turn">0</span>
+		Turn #: <span id="turn">0</span>
 		<br/>
 		Status: <span id="status">Waiting for players to join</span> 
+		<br/>
+		Player Color: <span id="color">1</span> 
    	</div>
   	<br/>
   	<input id="diceButton" type="button" value="Roll Dice" onclick="beginTurn()">

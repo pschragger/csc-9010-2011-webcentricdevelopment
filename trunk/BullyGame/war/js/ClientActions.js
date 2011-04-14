@@ -194,26 +194,34 @@ function joinGame()
 	            //update user name
 	            //var UserNameDiv = document.getElementById("playername");
 	            //UserNameDiv.innerHTML = UserName;
+
+	            switch(parseInt(receivedJSON.PlayerTurnID)+1)
+	            {
+	            	case 0:
+	            		$('color').innerHTML = "Red";
+	            		$('color').style.color = "red";
+	            		break;
+	            	case 1:
+	            		$('color').innerHTML = "Yellow";
+	            		$('color').style.color = "#FFFF00";
+	            		break;
+	            	case 2:
+	            		$('color').innerHTML = "Green";
+	            		$('color').style.color = "#00FF00";
+	            		break;
+	            	case 3:
+	            		$('color').innerHTML = "Blue";
+	            		$('color').style.color = "blue";
+	            		break;
+	            	default:
+	            		$('color').innerHTML = "???";
+            			$('color').style.color = "black";
+	            }
+
+        		$('color').style.fontWeight = 'bold';
 	            
 	            //disable the roll dice button until all players join
-	          //update the turn
-                var TurnNumber = parseFloat(receivedJSON.TurnNumber);
-                var TurnNumberId = parseFloat(receivedJSON.PlayerTurnID);
-                console.log("mod = " + TurnNumber%TurnNumberId);
-                /*
-                if (TurnNumber%TurnNumberId==0)
-            	{
-                	//console.log("new turn number");
-    	            Cookie.write(CookieTurnNumber,TurnNumber);
-    	            $('turn').set('html',TurnNumber);
-    	            $('diceButton').disabled=false;
-            	}
-                else
-            	{
-            	*/
-                	$('diceButton').disabled=true;
-            
-	            
+	            $('diceButton').disabled=true;
 	            
 	            //start polling the server
 	            Poll = self.setInterval("checkState()",3000);
@@ -441,20 +449,4 @@ function checkState()
         },
         onFailure: function(){alert("Could not connect to the game server..."); window.clearInterval(Poll); }
       }).send();
-}
-
-//clear game cookies when you leave a game
-function clearGameCookies()
-{
-	console.log("stop 1");
-	window.clearInterval(Poll); 
-	console.log("stop 2");
-	Cookie.dispose(CookiePlayerID);
-	Cookie.dispose(CookieGameID);
-	Cookie.dispose(CookieTurnNumber);
-	Cookie.dispose(CookieMyTurn);
-	Cookie.dispose(CookiePlayerTurnID);
-	Cookie.dispose(CookieTotalPlayers);
-	Cookie.dispose(CookieUserName);
-	console.log("stop 3");
 }
