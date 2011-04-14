@@ -190,4 +190,47 @@ public class GameState {
 	{
 		return ((PlayersJoined-4)==0);
 	}
+	
+	public List<GamePlayer> getPlayers()
+	{
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		Query query = pmf.newQuery(GamePlayer.class);
+		query.setFilter("gameID == "+this.key);
+		
+		return (List<GamePlayer>) query.execute();
+	}
+	
+	/**
+	 * Checks pawns of each player. If all pawns of the same color are at the home position, then that player is the winner. The game then becomes inactive.
+	 * @return TRUE if a winner has been found. FALSE if no winner has been found.
+	 */
+	public boolean hasWinner()
+	{
+		List<GamePlayer> players = this.getPlayers();
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		
+		for(GamePlayer player : players)
+		{
+			int playerColor = player.getColor();
+			Query pQuery = pmf.newQuery(PawnState.class);
+			pQuery.setFilter("gameID = "+this.key+" && pawnColor == "+playerColor);
+			List<PawnState> pawns = (List<PawnState>) pQuery.execute();
+			int notHome = 0;
+			for (PawnState pawn : pawns)
+			{
+				if (!pawn.isHome()){
+					notHome++;
+				}
+			}
+			if (notHome == 0)
+			{
+				this.winner = player.getUser();
+				this.active = false;
+				this.endDate = new Date();
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }
