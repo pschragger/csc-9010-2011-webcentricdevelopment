@@ -34,12 +34,16 @@ public class BullyUser {
     
     @Persistent
     private long lastActive;
+    
+    @Persistent
+    private double rating;
 
 	public BullyUser(User user) {
     	this.user = user;
     	this.name = user.getNickname();
     	this.email = user.getEmail();
     	this.userId = user.getUserId();
+    	this.rating = 4;
     }
 	
 	public void markActive() {
@@ -270,7 +274,30 @@ public class BullyUser {
 	}
 	
 	public long rank() {
+		//Games won/Games Played * 100
 		return 0;
+	}
+	
+	/**
+	 * Rates the player based on the players they played and their
+	 * @param oppRating Sum of opponent ratings divided by the number of opponents
+	 * @param place position they came in (1, 2, 3, or 4)
+	 * @return calculated rating
+	 */
+	public double rate(double oppRating, int place)
+	{
+		//4 points for 1st, 3 points for 2nd, 2 points for 3rd, 1 point for 4th.
+		//playerq = 10^rating/16
+		//e = playerQ/(playerQ+OpponQ)
+		double Qa = Math.pow(10.0, (rating/16));
+		double Qb = Math.pow(10.0, (oppRating/16));
+		
+		double eThis = Qa/(Qa+Qb);
+		double eOppo = Qb/(Qb+Qa);
+		
+		rating = rating + .025*((5-place)-eThis);
+		System.out.println("Rating is updated to "+rating);
+		return rating;
 	}
 	
 	public String stats() {
@@ -305,6 +332,11 @@ public class BullyUser {
 	public User getUser() {
 		return user;
 	}
+	
+	public double getRating()
+	{
+		return rating;
+	}
 
 	public void setUser(User user) {
 		this.user = user;
@@ -324,5 +356,10 @@ public class BullyUser {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public void setRating(double rating)
+	{
+		this.rating = rating;
 	}
 }
