@@ -14,6 +14,9 @@
 		$(window).addEvent('load',function(){
 			setUpBoard();
    		});
+		$(window).addEvent('unload',function(){
+			clearGameCookies();
+		},false);
    	</script>
 
    	

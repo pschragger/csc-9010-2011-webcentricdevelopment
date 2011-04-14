@@ -196,7 +196,24 @@ function joinGame()
 	            //UserNameDiv.innerHTML = UserName;
 	            
 	            //disable the roll dice button until all players join
-	            $('diceButton').disabled=true;
+	          //update the turn
+                var TurnNumber = parseFloat(receivedJSON.TurnNumber);
+                var TurnNumberId = parseFloat(receivedJSON.PlayerTurnID);
+                console.log("mod = " + TurnNumber%TurnNumberId);
+                /*
+                if (TurnNumber%TurnNumberId==0)
+            	{
+                	//console.log("new turn number");
+    	            Cookie.write(CookieTurnNumber,TurnNumber);
+    	            $('turn').set('html',TurnNumber);
+    	            $('diceButton').disabled=false;
+            	}
+                else
+            	{
+            	*/
+                	$('diceButton').disabled=true;
+            
+	            
 	            
 	            //start polling the server
 	            Poll = self.setInterval("checkState()",3000);
@@ -424,4 +441,20 @@ function checkState()
         },
         onFailure: function(){alert("Could not connect to the game server..."); window.clearInterval(Poll); }
       }).send();
+}
+
+//clear game cookies when you leave a game
+function clearGameCookies()
+{
+	console.log("stop 1");
+	window.clearInterval(Poll); 
+	console.log("stop 2");
+	Cookie.dispose(CookiePlayerID);
+	Cookie.dispose(CookieGameID);
+	Cookie.dispose(CookieTurnNumber);
+	Cookie.dispose(CookieMyTurn);
+	Cookie.dispose(CookiePlayerTurnID);
+	Cookie.dispose(CookieTotalPlayers);
+	Cookie.dispose(CookieUserName);
+	console.log("stop 3");
 }
