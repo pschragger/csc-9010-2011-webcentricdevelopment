@@ -36,7 +36,7 @@
 		   {
 			   long gameKey = game.getKey();
 			   %>
-			   <div class="game"><a href="/jsp/game/game.jsp?gameid=<%= gameKey %>">Game <%= gameKey %></a></div>
+			   <div class="game"><a href="/jsp/game/game.jsp?id=<%= gameKey %>">Game <%= gameKey %></a></div>
 			   <%
 		   }
 	   }
@@ -59,17 +59,17 @@
 		   {
 			   long gameKey = game.getKey();
 			   %>
-			   <div class="game"><a href="/jsp/game.jsp?gameid=<%= gameKey %>">Game <%= gameKey %></a></div>
+			   <div class="game"><a href="/jsp/game.jsp?id=<%= gameKey %>">Game <%= gameKey %></a></div>
 			   <%
 		   }
 		   %></div><%
 	   }
 
 	   //display friends and use CSS to designate active/inactive
-	   %><div id="friends"><%
+	   %><div id="friends">Friends<br /><%
 	   List<Friend> friends = user.friends();
 	   
-	   if(friends != null)
+	   if(friends != null && friends.size() > 0)
 	   {
 		   
 		   for(Friend friend : friends)
@@ -97,7 +97,7 @@
 	   
 	   //start a new game
 	   %>
-	   <form action="/jsp/game/game.jsp?username=<%= user.getId() %>&gameid=-1" >
+	   <form action="/jsp/game/game.jsp?username=<%= user.getId() %>&gameid=-1" method="post">
 	   	<input type="hidden" value="<%= user.getId() %>" name="player">
 	   	<input type="submit" value="Create New Game">
 	   </form>
