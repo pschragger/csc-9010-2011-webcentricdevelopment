@@ -24,6 +24,8 @@ public class PawnState {
 	@Persistent
 	private int pawnPos;
 	
+	private final int HOME = 69;
+	
 	/**
 	 * Creates a new PawnState object to store the location of a game piece
 	 * @param gameID Key for the game the pawn belongs to
@@ -103,5 +105,9 @@ public class PawnState {
 		this.pawnPos = pawnPos;
 	}
 	
+	public boolean isHome()
+	{
+		return pawnPos == HOME;
+	}
 	
 }
