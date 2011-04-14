@@ -36,7 +36,7 @@
 		   {
 			   long gameKey = game.getKey();
 			   %>
-			   <div class="game"><a href="/jsp/game/game.jsp?id=<%= gameKey %>">Game <%= gameKey %></a></div>
+			   <div class="game"><a href="/jsp/game/game.jsp?gameid=<%= gameKey %>">Game <%= gameKey %></a></div>
 			   <%
 		   }
 	   }
@@ -59,7 +59,7 @@
 		   {
 			   long gameKey = game.getKey();
 			   %>
-			   <div class="game"><a href="/jsp/game.jsp?id=<%= gameKey %>">Game <%= gameKey %></a></div>
+			   <div class="game"><a href="/jsp/game.jsp?gameid=<%= gameKey %>">Game <%= gameKey %></a></div>
 			   <%
 		   }
 		   %></div><%
