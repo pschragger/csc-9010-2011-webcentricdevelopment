@@ -185,4 +185,9 @@ public class GameState {
 		else
 			return null;
 	}
+	
+	public boolean isFull()
+	{
+		return ((PlayersJoined-4)==0);
+	}
 }

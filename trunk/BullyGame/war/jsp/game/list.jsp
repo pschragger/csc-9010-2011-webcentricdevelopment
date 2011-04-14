@@ -25,7 +25,10 @@
 		
 		for (GameState game :games)
 		{
-			%><a href="/jsp/game/game.jsp?username=0&gameid=<%= game.getKey() %>">Game #<%= game.getKey() %> </a> was found.<br /><%
+			if(!game.isFull())
+			{
+				%><a href="/jsp/game/game.jsp?username=0&gameid=<%= game.getKey() %>">Game #<%= game.getKey() %> </a> was found.<br /><%
+			}
 		}
 	}
 %>
