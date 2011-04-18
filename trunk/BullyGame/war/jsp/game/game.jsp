@@ -14,6 +14,10 @@
 		$(window).addEvent('load',function(){
 			setUpBoard();
    		});
+		$(window).addEvent('beforeunload',function(){
+			RemoveCookies();
+		})
+		
    	</script>
 
    	
