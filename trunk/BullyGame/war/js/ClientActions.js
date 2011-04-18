@@ -450,3 +450,15 @@ function checkState()
         onFailure: function(){alert("Could not connect to the game server..."); window.clearInterval(Poll); }
       }).send();
 }
+
+function RemoveCookies()
+{
+	//remove cookies
+	Cookie.dispose(CookiePlayerID);
+	Cookie.dispose(CookieGameID);
+	Cookie.dispose(CookieTurnNumber);
+	Cookie.dispose(CookieMyTurn);
+	Cookie.dispose(CookiePlayerTurnID);
+	Cookie.dispose(CookieTotalPlayers);
+	Cookie.dispose(CookieUserName);
+}
