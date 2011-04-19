@@ -179,11 +179,13 @@ function joinGame()
             if(!receivedJSON.Status)
         	{
 	            //create the new cookies
-	            GameID = Cookie.write(CookieGameID, receivedJSON.GameID);
-	            PlayerID = Cookie.write(CookiePlayerID, receivedJSON.PlayerID);
-	            TurnNumber = Cookie.write(CookieTurnNumber, parseFloat(receivedJSON.TurnNumber));
-	            MyTurn = Cookie.write(CookieMyTurn,"No");
-	            PlayerTurnID = Cookie.write(CookiePlayerTurnID,parseFloat(receivedJSON.PlayerTurnID));
+	            Cookie.write(CookieGameID, receivedJSON.GameID);
+	            Cookie.write(CookiePlayerID, receivedJSON.PlayerID);
+	            var TurnNum = parseFloat(receivedJSON.TurnNumber);
+	            Cookie.write(CookieTurnNumber, TurnNum);
+	            var MyTurn = (TurnNum=="-1")?"No":"Draw";
+	            Cookie.write(CookieMyTurn,MyTurn);
+	            Cookie.write(CookiePlayerTurnID,parseFloat(receivedJSON.PlayerTurnID));
 	            var UserName = receivedJSON.UserName;
 	            Cookie.write(CookieUserName,UserName);
 	            
@@ -221,7 +223,11 @@ function joinGame()
         		$('color').style.fontWeight = 'bold';
 	            
 	            //disable the roll dice button until all players join
-	            $('diceButton').disabled=true;
+        		if (MyTurn=="No")
+    			{
+    				$('diceButton').disabled=true;
+    			}
+	            
 	            
 	            //start polling the server
 	            Poll = self.setInterval("checkState()",3000);
@@ -317,14 +323,14 @@ function playTurn()
     var PlayerID = Cookie.read(CookiePlayerID);
     
     //get the dice rolls
-    var Die1 = parseInt(document.getElementById("Dice1").innerHTML);
-    var Die2 = parseInt(document.getElementById("Dice2").innerHTML);
+    var Die1 = 1;//parseInt(document.getElementById("Dice1").innerHTML);
+    var Die2 = 1;//parseInt(document.getElementById("Dice2").innerHTML);
     var CardNumber = 1;
     
     //get pawn moves
-    var pNumberArray = [1];
-    var pStartArray = [0];
-    var pEndArray = [5];
+    var pNumberArray = [0,1];
+    var pStartArray = [0,5];
+    var pEndArray = [3,6];
     
     //create the JSON object
     var objJSON =
@@ -445,7 +451,13 @@ function checkState()
 	                	}
 	            	}
 	        	}
-        	} 
+	            else if (Status=="GameOver")
+	    		{
+	        		alert("Game Over: " + receivedJSON.Winner + " won the game");
+	        		window.clearInterval(Poll);
+	    		}
+            } 
+        	
         },
         onFailure: function(){alert("Could not connect to the game server..."); window.clearInterval(Poll); }
       }).send();

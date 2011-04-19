@@ -32,6 +32,7 @@
 		Status: <span id="status">Waiting for players to join</span> 
 		<br/>
 		Player Color: <span id="color">1</span> 
+		<input id="playTurnTest" type="button" value="Submit your turn" onclick="playTurn()">
    	</div>
   	<br/>
   	<input id="diceButton" type="button" value="Roll Dice" onclick="beginTurn()">

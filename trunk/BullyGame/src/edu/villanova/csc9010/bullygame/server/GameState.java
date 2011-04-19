@@ -213,7 +213,7 @@ public class GameState {
 		{
 			int playerColor = player.getColor();
 			Query pQuery = pmf.newQuery(PawnState.class);
-			pQuery.setFilter("gameID = "+this.key+" && pawnColor == "+playerColor);
+			pQuery.setFilter("gameID == "+this.key+" && pawnColor == "+playerColor);
 			List<PawnState> pawns = (List<PawnState>) pQuery.execute();
 			int notHome = 0;
 			for (PawnState pawn : pawns)

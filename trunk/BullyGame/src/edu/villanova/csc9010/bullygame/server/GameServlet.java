@@ -17,7 +17,7 @@ public class GameServlet  extends HttpServlet
 {
 	static final int MinRoll = 1;
 	static final int MaxRoll = 6;
-	static final int MaxPlayers = 2; //just for testing
+	static final int MaxPlayers = 1; //just for testing
 	
 	//Static JSON names
 	static final String JSONGameID = "GameID";
@@ -31,6 +31,7 @@ public class GameServlet  extends HttpServlet
 	static final String JSONDiceRoll2 = "DiceRoll2";
 	static final String JSONCardNumber = "CardNumber";
 	static final String JSONStatus = "Status";
+	static final String JSONWinner = "Winner";
 	
 	Integer PlayerTurn = 0;
 	Integer PlayersJoined = 0;
@@ -283,12 +284,23 @@ public class GameServlet  extends HttpServlet
 		//parse the string into a json object
 		JSONObject json = parseJSON(jsonContent);
 		long GameID = Long.parseLong(json.get(JSONGameID).toString());
-		long PlayerID = Long.parseLong(json.get(JSONPlayerID).toString());
+		//Long PlayerID = Long.parseLong(json.get(JSONPlayerID).toString());
+		long PlayerID = BullyUser.loggedInUser().getId();
 		
 		//get turn info
 		Integer DiceRoll1 = Integer.parseInt(json.get(JSONDiceRoll1).toString());
 		Integer DiceRoll2 = Integer.parseInt(json.get(JSONDiceRoll2).toString());
-		String CardNumber = json.get(JSONCardNumber).toString();		
+		//String CardNumber = json.get(JSONCardNumber).toString();	
+		
+		JSONObject Moves = (JSONObject)json.get("Moves");
+		JSONArray PawnNumbers = (JSONArray)Moves.get("PawnNumber");
+		JSONArray PawnStartSpaces = (JSONArray)Moves.get("StartSpace");
+		JSONArray PawnEndSpaces = (JSONArray)Moves.get("EndSpace");
+		for (int i=0; i<PawnNumbers.size(); i++)
+		{
+			System.out.println("Pawn #" + PawnNumbers.get(i) + " went started on space " + PawnStartSpaces.get(i) + " and moved to space " + PawnEndSpaces.get(i));
+		}
+		
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		GameState ThisGame = pm.getObjectById(GameState.class, GameID);
@@ -296,21 +308,6 @@ public class GameServlet  extends HttpServlet
 		Integer TotalPlayers = ThisGame.getNumberPlayersJoined();
 		Integer CurrentPlayerTurn = (TurnNumber % TotalPlayers);
 		
-		//get list of game players
-		//String query = "select from " + GamePlayer.class.getName() + " where gameID==" + GameID;
-		//List<GamePlayer> Players = (List<GamePlayer>) pm.newQuery(query).execute();
-		/*if (Players.isEmpty())
-		{
-			System.out.println("No players returned");
-		}
-		else
-		{
-			for (GamePlayer gm : Players)
-			{
-				System.out.println(gm.getUser() + " is color " + gm.getColor());
-			}
-		}
-		*/
 		//find out whose turn it is
 		GamePlayer CurrentPlayer = GamePlayer.findPlayerByGameIdTurnID(GameID, CurrentPlayerTurn);
 		long CurrentPlayerID = CurrentPlayer.getUser();
@@ -378,9 +375,25 @@ public class GameServlet  extends HttpServlet
 		GameState ThisGame = pm.getObjectById(GameState.class, GameID);
 		//example - Employee e = pm.getObjectById(Employee.class, "Alfred.Smith@example.com");
 		SameState = ThisGame.getTurnNumber().toString().equals(TurnNumber);
+		boolean WasWon = ThisGame.hasWinner();
 		
-		
-		if (SameState)
+		if (WasWon)
+		{
+			//Someone won the game
+			String WinnerName = "Someone";
+			Long WinnerID = ThisGame.getWinner();
+			if (WinnerID>0)
+			{
+				BullyUser Winner = BullyUser.findByUserId(WinnerID);
+				WinnerName = Winner.getName();
+			}
+			json.put(JSONStatus, "GameOver");
+			json.put(JSONWinner, WinnerName);
+			json.remove(JSONPlayerID);
+			json.remove(JSONGameID);			
+			Response = json.toJSONString();
+		}
+		else if (SameState)
 		{
 			//report no changes
 			json.put(JSONStatus, "NoChange");
