@@ -30,6 +30,6 @@
 			}
 			
 			window.addEvent('load', startChat);
-			setInterval(updateChat, 15*1000);
+			setInterval(updateChat, 5*1000);
 		})();
 	</script>
