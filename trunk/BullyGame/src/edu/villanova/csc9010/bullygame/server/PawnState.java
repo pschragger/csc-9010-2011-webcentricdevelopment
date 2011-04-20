@@ -1,5 +1,9 @@
 package edu.villanova.csc9010.bullygame.server;
 
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -110,4 +114,23 @@ public class PawnState {
 		return pawnPos == HOME;
 	}
 	
+	static public PawnState findPawnByGameIdColorPawnNumber(long GameId, int Color, int PawnNumber)
+	{
+		PawnState returnPawn = null;
+		PersistenceManager pmf = PMF.get().getPersistenceManager();
+		try {
+		    Query query = pmf.newQuery(PawnState.class);
+		    query.setFilter("gameID == userParam && pawnNum == pawnNumber && pawnColor == userColor ");
+		    query.declareParameters("long userParam, int pawnNumber, int userColor");
+		    List<PawnState> results = (List<PawnState>)query.execute(GameId,PawnNumber,Color);
+		    returnPawn = results.get(0);
+		} catch(Exception e) {
+			// If the table does not exist, the read will fail so we need to make the user
+			e.printStackTrace();
+		} finally {
+		    pmf.close();
+		}
+		
+		return returnPawn;
+	}
 }
