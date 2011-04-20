@@ -371,6 +371,11 @@ function playTurn()
             	var PlayCardButtonDiv = document.getElementById("PlayCardButton");
             	PlayCardButtonDiv.disabled=true;
         	}
+            else
+        	{
+            	var PawnNumber = receivedJSON.BadPawn;
+            	alert("Invalid Move: Pawn #" + PawnNumber + " was moved incorrectly");
+        	}
         }
       }).PUT();
     

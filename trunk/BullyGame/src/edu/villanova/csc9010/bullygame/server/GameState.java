@@ -200,6 +200,12 @@ public class GameState {
 		return (List<GamePlayer>) query.execute();
 	}
 	
+	//method to check if the move was valid...needs to be completed
+	public boolean CheckMove(long GameID, long PlayerID, int PawnNumber, int PawnEndSpace)
+	{
+		return true;
+	}
+	
 	/**
 	 * Checks pawns of each player. If all pawns of the same color are at the home position, then that player is the winner. The game then becomes inactive.
 	 * @return TRUE if a winner has been found. FALSE if no winner has been found.

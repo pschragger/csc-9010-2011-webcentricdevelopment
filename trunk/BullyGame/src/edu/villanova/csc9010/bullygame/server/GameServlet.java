@@ -292,14 +292,7 @@ public class GameServlet  extends HttpServlet
 		Integer DiceRoll2 = Integer.parseInt(json.get(JSONDiceRoll2).toString());
 		//String CardNumber = json.get(JSONCardNumber).toString();	
 		
-		JSONObject Moves = (JSONObject)json.get("Moves");
-		JSONArray PawnNumbers = (JSONArray)Moves.get("PawnNumber");
-		JSONArray PawnStartSpaces = (JSONArray)Moves.get("StartSpace");
-		JSONArray PawnEndSpaces = (JSONArray)Moves.get("EndSpace");
-		for (int i=0; i<PawnNumbers.size(); i++)
-		{
-			System.out.println("Pawn #" + PawnNumbers.get(i) + " went started on space " + PawnStartSpaces.get(i) + " and moved to space " + PawnEndSpaces.get(i));
-		}
+		
 		
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -318,7 +311,7 @@ public class GameServlet  extends HttpServlet
 		boolean Roll1 = DiceRoll1.equals(ThisGame.getDie1());
 		boolean Roll2 = DiceRoll2.equals(ThisGame.getDie2());
 		
-		if (ValidMove && Roll1 && Roll2)
+		if (true)
 		{
 			//update the game state
 			
@@ -326,6 +319,34 @@ public class GameServlet  extends HttpServlet
 			
 			PlayerTurn++;
 			ThisGame.setTurnNumber(1 + TurnNumber);
+			
+			//update the pawn objects
+			JSONObject Moves = (JSONObject)json.get("Moves");
+			JSONArray PawnNumbers = (JSONArray)Moves.get("PawnNumber");
+			JSONArray PawnStartSpaces = (JSONArray)Moves.get("StartSpace");
+			JSONArray PawnEndSpaces = (JSONArray)Moves.get("EndSpace");
+			int color = CurrentPlayer.getColor();
+			int pNum, pStart, pEnd;
+			for (int i=0; i<PawnNumbers.size(); i++)
+			{
+				pNum =  Integer.parseInt(PawnNumbers.get(i).toString());
+				pStart = Integer.parseInt(PawnStartSpaces.get(i).toString());
+				pEnd = Integer.parseInt(PawnEndSpaces.get(i).toString());
+				boolean checkMove = ThisGame.CheckMove(GameID, CurrentPlayerID, pNum, pEnd);
+				if (checkMove)
+				{
+					PawnState Pawn = PawnState.findPawnByGameIdColorPawnNumber(GameID, color, pNum);
+					Pawn.setPawnPos(pEnd);
+					System.out.println("Pawn #" + pNum + " went started on space " + pStart + " and moved to space " + Pawn.getPawnPos());
+				}
+				else
+				{
+					System.out.println("Invalid move: Pawn #" + pNum + " cannot move from square " + pStart + " to " + pEnd);
+					Response = "{\"Status\":\"Invalid\",\"BadPawn\":\"" + pNum + "\"}";
+					pm.close();
+					return Response;
+				}
+			}
 			
 			//determine next turn
 			long NextPlayer;
