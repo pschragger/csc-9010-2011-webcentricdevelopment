@@ -17,7 +17,7 @@ public class GameServlet  extends HttpServlet
 {
 	static final int MinRoll = 1;
 	static final int MaxRoll = 6;
-	static final int MaxPlayers = 1; //just for testing
+	static final int MaxPlayers = 2; //just for testing
 	
 	//Static JSON names
 	static final String JSONGameID = "GameID";
